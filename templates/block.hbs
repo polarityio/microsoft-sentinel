@@ -1,0 +1,166 @@
+<div class='slack-integration'>
+  {{#if (and availableChannelsToMessage.length block.userOptions.allowSendingMessages) }}
+    <div class='messaging'>
+      <div class='channel-select-container'>
+        <div class='channel-select-title'>
+          {{#if selectedChannel.is_private}}
+            {{fa-icon 'lock' class='icon channel-icon' size='md' fixedWidth=true}}
+          {{else}}
+            {{fa-icon 'hashtag' class='icon channel-icon' size='md' fixedWidth=true}}
+          {{/if}}
+          <select
+            class='channel-dropdown'
+            onchange={{action 'selectChannel' value='target.value'}}
+          >
+            {{#each availableChannelsToMessage as |channel|}}
+              <option
+                class='channel-option'
+                value={{channel.id}}
+                selected={{eq channel.id selectedChannel.id}}
+              >{{channel.name}}</option>
+            {{/each}}
+          </select>
+        </div>
+      </div>
+      {{textarea
+        class='message-box'
+        change=(action (mut messageValue) value='target.value')
+        rows=2
+        placeholder=(concat 'Message ' selectedChannel.name)
+        value=messageValue
+        disabled=sendingMessage
+      }}
+      <div class='send-button-and-messages'>
+        <button
+          {{action 'sendMessage'}}
+          class='p-btn btn btn-light send-button
+            {{if (or sendingMessage (not messageValue)) "disabled"}}'
+          disabled={{or sendingMessage (not messageValue)}}
+        >
+          {{#if sendingMessage}}
+            {{fa-icon
+              'spinner-third'
+              class='icon loading-icon'
+              size='md'
+              fixedWidth=true
+              spin=true
+              alt='Send Message'
+            }}
+          {{/if}}
+          {{fa-icon 'paper-plane' class='icon send-icon' size='md' fixedWidth=true}}
+        </button>
+        {{#if messagingToast}}
+          <div class='alert alert-info'>
+            {{messagingToast}}
+          </div>
+        {{/if}}
+        {{#if errorMessagingToast}}
+          <div class='alert alert-danger'>
+            {{errorMessagingToast}}
+          </div>
+        {{/if}}
+      </div>
+    </div>
+  {{/if}}
+
+  {{#if details.foundMessagesFromSearch.length}}
+    <div class='search-results'>
+      {{#if foundMessageSearchResultsOpen}}
+        <div class='expandable-title-container open'>
+          <a
+            href='#'
+            class='expandable-title'
+            {{on 'click' (action 'toggleShowingFoundMessages')}}
+          >
+            <span class='text'>Search results for "{{block.entity.value}}</span>"
+            {{fa-icon 'angle-up' class='icon search-result-chevron'}}
+          </a>
+        </div>
+        <div class='search-results-content'>
+          {{#each details.foundMessagesFromSearch as |foundMessage index|}}
+            <div class='search-result'>
+              <a href='{{foundMessage.messageLink}}'>
+                <div class='channel-and-date'>
+                  <span class='channel-name'>
+                    {{#if message.channelIsPrivate}}
+                      {{fa-icon 'lock' class='icon channel-icon'}}
+                    {{else}}
+                      {{fa-icon 'hashtag' class='icon channel-icon'}}
+                    {{/if}}
+                    {{foundMessage.channelName}}
+                  </span>
+                  <span class='date'>
+                    &nbsp;- &nbsp;{{moment-format
+                      foundMessage.datetime
+                      'MMM DD, YYYY'
+                      timeZone=timezone
+                    }}</span>
+                  <span class='view-in-channel'>View&nbsp;in&nbsp;channel</span>
+                </div>
+                <div class='message-and-picture'>
+                  {{#if foundMessage.profilePictureSrc}}
+                    <img
+                      class='profile-picture'
+                      src='{{foundMessage.profilePictureSrc}}'
+                    />
+                  {{/if}}
+                  <div class='message'>
+                    <div class='sender-and-time'>
+                      <span class='sender'>{{titleize foundMessage.username}}</span>
+                      <span class='time'>{{moment-format
+                          foundMessage.datetime
+                          'hh:mm A'
+                          timeZone=timezone
+                        }}</span>
+                    </div>
+                    <div class='message-content'>
+                      {{foundMessage.displayMessage}}
+                      {{#if foundMessage.shouldShowMoreMessage}}
+                        <div class='show-more'><a
+                            href='#'
+                            {{on 'click' (action 'showMoreOfMessage' index)}}
+                          >... Show More</a></div>
+                      {{/if}}
+                    </div>
+                  </div>
+                </div>
+              </a>
+            </div>
+          {{/each}}
+          {{#if
+            (lt details.currentSearchResultsPage details.totalNumberOfSearchResultPages)
+          }}
+            <div class='load-more {{if loadingMoreMessages "loading-more"}}'><a
+                href='#'
+                {{on 'click' (action 'loadMoreSearchMessages')}}
+              >
+                {{#if loadingMoreMessages}}
+                  {{fa-icon
+                    'spinner-third'
+                    class='icon loading-icon'
+                    size='lg'
+                    fixedWidth=true
+                    spin=true
+                    alt='Getting More Messages'
+                  }}
+                {{else}}
+                  ... Load More
+                {{/if}}
+              </a></div>
+          {{/if}}
+        </div>
+      {{else}}
+        <div class='expandable-title-container closed'>
+          <a
+            href='#'
+            class='expandable-title'
+            {{on 'click' (action 'toggleShowingFoundMessages')}}
+          >
+            <span class='text'>Search results for "{{block.entity.value}}</span>"
+            {{fa-icon 'angle-down' class='icon search-result-chevron'}}
+          </a>
+        </div>
+      {{/if}}
+    </div>
+  {{/if}}
+</div>

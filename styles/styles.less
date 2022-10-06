@@ -1,0 +1,282 @@
+.messaging {
+  background-color: #f8f8f8;
+  cursor: text;
+  .channel-select-container {
+    border-top: 1px solid #d4d4d4;
+    border-left: 1px solid #d4d4d4;
+    border-right: 1px solid #d4d4d4;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    padding: 4px;
+    height: 30px;
+    .channel-select-title {
+      display: inline;
+      padding: 4px;
+      border-radius: 6px;
+
+      .channel-dropdown {
+        color: rgb(29, 28, 29);
+        font-size: 14px;
+        font-weight: 800;
+        background-color: transparent;
+        border: none;
+        cursor: pointer;
+        .channel-option {
+          font-size: 13px;
+          font-weight: 700;
+        }
+      }
+      &:hover {
+        background-color: #efefef;
+      }
+      &:active {
+        background-color: #d4d4d4;
+      }
+    }
+  }
+  .message-box {
+    width: 100%;
+    padding: 8px 10px;
+    border: none;
+    border-left: 1px solid #d4d4d4;
+    border-right: 1px solid #d4d4d4;
+    margin-bottom: -2px;
+    &:focus {
+      outline: none;
+    }
+  }
+  .send-button-and-messages {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px;
+    border: none;
+    border-bottom: 1px solid #d4d4d4;
+    border-left: 1px solid #d4d4d4;
+    border-right: 1px solid #d4d4d4;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+    background-color: white;
+
+    .alert {
+      margin-bottom: 0px;
+      padding: 8px 12px;
+    }
+    .send-button {
+      background-color: #007a5a;
+      padding: 6px 8px;
+      height: 28px;
+      min-width: 55px;
+      border-radius: 4px;
+      .icon {
+        &.send-icon {
+          color: white;
+        }
+      }
+      &:hover {
+        background-color: #188467;
+      }
+      &.disabled {
+        background-color: white;
+
+        cursor: text;
+        .icon {
+          &.send-icon {
+            color: #5a5a5a;
+          }
+        }
+      }
+    }
+  }
+  .icon {
+    color: rgb(29, 28, 29);
+    font-size: 13px;
+    &.channel-icon {
+      margin-right: -7px;
+      margin-bottom: 1px;
+    }
+  }
+}
+
+.search-results {
+  margin-top: 8px;
+  border: 1px solid #d4d4d4;
+  border-radius: 6px;
+
+  .expandable-title-container {
+    padding: 4px;
+
+    &.open {
+      border-bottom: 1px solid #d4d4d4;
+      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0;
+      padding-bottom: 4px;
+    }
+
+    .expandable-title {
+      font-size: 15px;
+      font-weight: 700;
+      padding: 8px 14px;
+      // padding: 4px 7px 4px 7px;
+      border-radius: 4px;
+
+      color: #1d1c1d !important;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+
+      &:hover {
+        background-color: #f6f6f6;
+      }
+      &:active {
+        background-color: #e9e9e9;
+      }
+      .text {
+        max-width: 110%;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+      }
+      .search-result-chevron {
+        font-size: 15px;
+        margin-left: 5px;
+      }
+    }
+  }
+
+  .search-results-content {
+    background-color: #f8f8f8;
+    padding-top: 5px;
+    .search-result {
+      border: 1px solid #d4d4d4;
+      background-color: white;
+      border-radius: 8px;
+      padding: 7px 12px 12px;
+      margin: 4px 8px;
+      a {
+        color: #1d1c1d;
+        &:hover {
+          color: #1d1c1d;
+          .channel-and-date {
+            color: #1263a3;
+            .channel-name {
+              .channel-icon {
+                color: #1263a3;
+              }
+            }
+            .date {
+            }
+            .view-in-channel {
+              color: #616061;
+              visibility: visible;
+            }
+          }
+          .message {
+            .sender-and-time {
+              .sender {
+              }
+              .time {
+              }
+            }
+            .message-content {
+              .show-more {
+              }
+            }
+          }
+        }
+        &:active {
+          color: #1d1c1d;
+        }
+        .channel-and-date {
+          color: #616061;
+          font-size: 11px;
+          padding-bottom: 5px;
+          .channel-name {
+            font-weight: 700;
+            .channel-icon {
+              font-size: 9px;
+              color: #616061;
+            }
+          }
+          .date {
+            font-weight: 100;
+          }
+          .view-in-channel {
+            visibility: hidden;
+            padding-left: 10px;
+          }
+        }
+        .message-and-picture {
+          display: flex;
+          .profile-picture {
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+          }
+          .message {
+            padding-left: 10px;
+            .sender-and-time {
+              .sender {
+                font-size: 13px;
+                font-weight: 700;
+              }
+              .time {
+                font-size: 12px;
+                font-weight: 100;
+                color: #616061;
+              }
+            }
+            .message-content {
+              overflow-wrap:break-word !important;
+              word-break: break-word !important;
+              text-overflow: hidden !important;
+              hyphens: auto !important;
+
+              padding-top: 3px;
+              .show-more {
+                padding-top: 7px;
+                a {
+                  font-size: 12px;
+                  font-weight: 100;
+                  color: #616061;
+                  &:hover {
+                    color: #1263a3;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    .load-more {
+      padding: 0px 70px;
+      a {
+        margin: 6px;
+        display: flex;
+        justify-content: center;
+        background-color: #007a5a;
+        color: white;
+        font-weight: 700;
+        padding: 6px 8px;
+        height: 28px;
+        min-width: 55px;
+        border-radius: 4px;
+        &:hover {
+          background-color: #188467;
+        }
+      }
+      &.loading-more {
+        a {
+          background-color: #00a176;
+        }
+      }
+    }
+  }
+}
+
+.slack-integration > * {
+  font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande',
+    'Lucida Sans Unicode', Geneva, Verdana, sans-serif !important;
+}
