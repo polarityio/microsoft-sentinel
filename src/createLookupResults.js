@@ -5,8 +5,7 @@ const createLookupResults = (
   entitiesPartition,
   channels,
   foundMessagesByEntity,
-  options,
-  Logger
+  options
 ) =>
   map((entity) => {
     const {

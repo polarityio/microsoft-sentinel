@@ -26,18 +26,27 @@ module.exports = {
   },
   options: [
     {
-      key: 'url',
-      name: 'URL',
-      description: 'The URL of the  API you would like to connect to',//TODO
+      key: 'clientId',
+      name: 'Azure AD Registered App Application (client) ID',
+      description: 'TODO add instructions of where to get',
       default: '',
       type: 'text',
       userCanEdit: false,
       adminOnly: true
     },
     {
-      key: 'userToken',
-      name: 'User Token',
-      description: 'TODO',
+      key: 'tenantId',
+      name: 'Azure AD Registered App Directory (tenant) ID',
+      description: 'TODO add instructions of where to get',
+      default: '',
+      type: 'text',
+      userCanEdit: false,
+      adminOnly: true
+    },
+    {
+      key: 'clientSecret',
+      name: 'Azure AD Registered App Client Secret',
+      description: 'TODO add instructions of where to get',
       default: '',
       type: 'password',
       userCanEdit: false,

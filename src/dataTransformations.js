@@ -19,7 +19,8 @@ const {
   identity,
   join,
   split,
-  getOr
+  getOr,
+  last
 } = require('lodash/fp');
 
 const { IGNORED_IPS } = require('./constants');
@@ -178,6 +179,15 @@ const encodeBase64 = (str) => str && Buffer.from(str).toString('base64');
 
 const decodeBase64 = (str) => str && Buffer.from(str, 'base64').toString('ascii');
 
+const standardizeEntityTypes = (entities) =>
+  map(
+    ({ type, types, ...entity }) => ({
+      ...entity,
+      type: type === 'custom' ? flow(first, split('.'), last)(types) : type
+    }),
+    entities
+  );
+
 module.exports = {
   getKeys,
   groupEntities,
@@ -196,5 +206,6 @@ module.exports = {
   sleep,
   getSetCookies,
   encodeBase64,
-  decodeBase64
+  decodeBase64,
+  standardizeEntityTypes
 };
