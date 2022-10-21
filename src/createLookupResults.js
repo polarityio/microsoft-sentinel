@@ -1,43 +1,89 @@
-const { flow, map, get, size, find, every, eq } = require('lodash/fp');
-
+const { flow, get, size, find, eq, flatMap } = require('lodash/fp');
+const map = require('lodash/fp/map').convert({ cap: false });
 
 const createLookupResults = (
-  entitiesPartition,
-  channels,
-  foundMessagesByEntity,
+  indicators,
+  incidents,
+  domainWhois,
+  ipGeodata,
+  kustoQueryResults,
+  entities,
   options
 ) =>
   map((entity) => {
-    const {
-      foundMessagesFromSearch,
-      totalNumberOfSearchResultPages,
-      currentSearchResultsPage
-    } = find(flow(get('entity.value'), eq(entity.value)), foundMessagesByEntity) || {
-      foundMessagesFromSearch: [],
-      totalNumberOfSearchResultPages: 0,
-      currentSearchResultsPage: 0
-    };
+    const resultsForThisEntity = getResultsForThisEntity(
+      entity,
+      indicators,
+      incidents,
+      domainWhois,
+      ipGeodata,
+      kustoQueryResults
+    );
 
     const lookupResult = {
       entity,
-      data:
-        (!options.allowSendingMessages && size(foundMessagesFromSearch)) ||
-        (options.allowSendingMessages && every(size, [channels]))
-          ? {
-              summary: []
-                .concat(options.allowSendingMessages ? 'Message Channels' : [])
-                .concat(size(foundMessagesFromSearch) ? 'Search Results' : []),
-              details: {
-                channels,
-                foundMessagesFromSearch,
-                totalNumberOfSearchResultPages,
-                currentSearchResultsPage
-              }
-            }
-          : null
+      data: size(resultsForThisEntity)
+        ? {
+            summary: [],
+            details: resultsForThisEntity
+          }
+        : null
     };
 
     return lookupResult;
-  }, entitiesPartition);
+  }, entities);
 
+
+const getResultsForThisEntity = (
+  entity,
+  indicators,
+  incidents,
+  domainWhois,
+  ipGeodata,
+  kustoQueryResults
+) => {
+  const getResultForThisEntityResult = (results) =>
+    flow(find(flow(get('entity.value'), eq(entity.value))), get('result'))(results);
+
+  const indicatorsForThisEntity = getResultForThisEntityResult(indicators);
+  const incidentsForThisEntity = getResultForThisEntityResult(incidents);
+  const domainWhoisForThisEntity = getResultForThisEntityResult(domainWhois);
+  const ipGeodataForThisEntity = getResultForThisEntityResult(ipGeodata);
+
+  const kustoQueryResultsForThisEntity = getFormattedKustoQueryResultForThisEntity(
+    entity,
+    kustoQueryResults
+  );
+
+  return {
+    indicators: indicatorsForThisEntity,
+    incidents: incidentsForThisEntity,
+    domainWhois: domainWhoisForThisEntity,
+    ipGeodata: ipGeodataForThisEntity,
+    kustoQueryResults: kustoQueryResultsForThisEntity
+  };
+}
+
+const getFormattedKustoQueryResultForThisEntity = (entity, kustoQueryResults) => {
+  const kustoQueryResultForThisEntity = flow(
+    find(flow(get('id'), eq(entity.value))),
+    get('body.tables')
+  )(kustoQueryResults);
+
+  const formattedResultsTable = map(
+    (table) => ({
+      tableName: table.name,
+      tableFields: flatMap(
+        (row) =>
+          map((column, index) => ({ ...column, value: get(index, row) }), columns).concat(
+            { type: 'endOfRow' }
+          ),
+        table.rows
+      )
+    }),
+    kustoQueryResultForThisEntity
+  );
+
+  return formattedResultsTable;
+};
 module.exports = createLookupResults;

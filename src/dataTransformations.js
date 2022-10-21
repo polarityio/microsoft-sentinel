@@ -1,3 +1,4 @@
+const { flatMap } = require('lodash');
 const _ = require('lodash');
 const {
   flow,
@@ -20,7 +21,9 @@ const {
   join,
   split,
   getOr,
-  last
+  last,
+  trim,
+  reverse
 } = require('lodash/fp');
 
 const { IGNORED_IPS } = require('./constants');
@@ -188,6 +191,29 @@ const standardizeEntityTypes = (entities) =>
     entities
   );
 
+
+// allCombinations(['a', 'b'], [[1,2],[4,5]]) --> outputs [ { a: 1, b: 4 }, { a: 1, b: 5 }, { a: 2, b: 4 }, { a: 2, b: 5 } ]
+const allCombinations = (
+  [dimensionName, ...remainingDimensionNames],
+  [arrayToCombine, ...remainingArraysToCombine],
+  agg = {}
+) =>
+  flatMap(
+    (item) =>
+      size(remainingArraysToCombine)
+        ? allCombinations(remainingDimensionNames, remainingArraysToCombine, {
+            ...agg,
+            [dimensionName]: item
+          })
+        : {
+            ...agg,
+            [dimensionName]: item
+          },
+    arrayToCombine
+  );
+
+
+
 module.exports = {
   getKeys,
   groupEntities,
@@ -207,5 +233,6 @@ module.exports = {
   getSetCookies,
   encodeBase64,
   decodeBase64,
-  standardizeEntityTypes
+  standardizeEntityTypes,
+  allCombinations
 };

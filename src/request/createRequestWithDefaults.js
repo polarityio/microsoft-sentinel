@@ -12,8 +12,6 @@ const SUCCESSFUL_ROUNDED_REQUEST_STATUS_CODES = [200];
 const _configFieldIsValid = (field) => typeof field === 'string' && field.length > 0;
 
 const createRequestWithDefaults = () => {
-  const Logger = globalState.get('Logger');
-
   const {
     request: { ca, cert, key, passphrase, rejectUnauthorized, proxy }
   } = require('../../config/config.js');
@@ -71,18 +69,24 @@ const createRequestWithDefaults = () => {
       return postRequestFunctionResults;
     };
   };
-  
+
   const checkForStatusError = ({ statusCode, body }, requestOptions) => {
+    const Logger = globalState.get('Logger');
+
     const requestOptionsWithoutSensitiveData = {
       ...requestOptions,
-     //TODO remove id info
+      options: '{...}',
+      headers: {
+        ...requestOptions.headers,
+        Authorization: 'Bearer ****************'
+      }
     };
 
     Logger.trace({
-      responseBody: body,
       MESSAGE: 'Request Ran, Checking Status...',
       statusCode,
-      requestOptions: requestOptionsWithoutSensitiveData
+      requestOptions: requestOptionsWithoutSensitiveData,
+      responseBody: body
     });
 
     const roundedStatus = Math.round(statusCode / 100) * 100;
@@ -92,10 +96,7 @@ const createRequestWithDefaults = () => {
     if (statusCodeNotSuccessful) {
       const requestError = Error('Request Error');
       requestError.status = statusCodeNotSuccessful ? statusCode : body.error;
-      requestError.detail = get(
-        get('error', body),
-        ERROR_MESSAGES
-      );
+      requestError.detail = get(get('error', body), ERROR_MESSAGES);
       requestError.description = JSON.stringify(body);
       requestError.requestOptions = JSON.stringify(requestOptionsWithoutSensitiveData);
       throw requestError;
@@ -107,6 +108,4 @@ const createRequestWithDefaults = () => {
   return requestDefaultsWithInterceptors;
 };
 
-
-
-module.exports = createRequestWithDefaults ;
+module.exports = createRequestWithDefaults;

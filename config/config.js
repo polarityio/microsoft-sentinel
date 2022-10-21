@@ -2,9 +2,9 @@ module.exports = {
   name: 'Microsoft Sentinel',
   acronym: 'MS-SNTL',
   description: 'TODO',
-  entityTypes: ['*'],
+  entityTypes: ['domain', 'IPv4', 'email', 'hash', 'MAC'],
   styles: ['./styles/styles.less'],
-  defaultColor: 'light-gray',
+  defaultColor: 'light-blue',
   block: {
     component: {
       file: './components/block.js'
@@ -51,6 +51,63 @@ module.exports = {
       type: 'password',
       userCanEdit: false,
       adminOnly: true
+    },
+    {
+      key: 'subscriptionIds',
+      name: 'TODO',
+      description: 'TODO add instructions of where to get',
+      default: '',
+      type: 'text',
+      userCanEdit: false,
+      adminOnly: true
+    },
+    {
+      key: 'resourceGroupNames',
+      name: 'TODOs',
+      description: 'TODO add instructions of where to get',
+      default: '',
+      type: 'text',
+      userCanEdit: false,
+      adminOnly: true
+    },
+    {
+      key: 'workspaceNamesAndIds',
+      name: 'TODOs',
+      description: 'TODO add instructions of where to get name: id, ',
+      default: '',
+      type: 'text',
+      userCanEdit: false,
+      adminOnly: true
+    },
+    {
+      key: 'kustoQueryString',
+      name: 'Kusto Query String',
+      description:
+        'Kusto Query String to execute on the Sentinel Log Analytics Workspace. The string `{{ENTITY}}` will be replace by the looked up Entity. For example: ThreatIntelligenceIndicator | search "{{ENTITY}}" | take 10',
+      default: 'ThreatIntelligenceIndicator | search "{{ENTITY}}" | take 10',
+      type: 'text',
+      userCanEdit: false,
+      adminOnly: true
+    },
+    {
+      key: 'kustoQuerySummaryFields',
+      name: 'Kusto Query Summary Fields',
+      description:
+        'Comma delimited list of field values to include as part of the summary (no spaces between commas).  These fields must be returned by your Kusto Query. This option must be set to "User can view and edit" or "User can view only".',
+      default: '',
+      type: 'text',
+      userCanEdit: true,
+      adminOnly: false
+    },
+    {
+      //TODO possibly make generic to all queries
+      key: 'lookbackDays',
+      name: 'Lookback Days',
+      description: 'TODO',
+      default: 30,
+      type: 'number',
+      userCanEdit: true,
+      adminOnly: false
     }
   ]
 };

@@ -1,11 +1,12 @@
 'use strict';
 
-const validateOptions = require('./src/validateOptions');
+const { validateOptions } = require('./src/userOptions');
 
 const getLookupResults = require('./src/getLookupResults');
 const { parseErrorToReadableJSON } = require('./src/dataTransformations');
 
-const globalState = new require('node-cache')();
+const NodeCache = require('node-cache');
+const globalState = new NodeCache(); //TODO: make user specific abstraction
 
 let Logger;
 const startup = async (logger) => {
@@ -14,22 +15,26 @@ const startup = async (logger) => {
 };
 
 const doLookup = async (entities, options, cb) => {
-  Logger.debug({ entities }, 'Entities');
-
-  globalState.set('options', options);
-
-  let lookupResults;
   try {
-    lookupResults = await getLookupResults(entities);
+    Logger.debug({ entities }, 'Entities');
+
+    const entitiesWithCustomTypesSpecified = standardizeEntityTypes(entities);
+
+    const optionsWithUpdatedLists = parseUserOptionLists(options);
+
+    const lookupResults = await getLookupResults(
+      entitiesWithCustomTypesSpecified,
+      optionsWithUpdatedLists
+    );
+
+    Logger.trace({ lookupResults }, 'Lookup Results');
+    cb(null, lookupResults);
   } catch (error) {
     const err = parseErrorToReadableJSON(error);
     Logger.error({ error, formattedError: err }, 'Get Lookup Results Failed');
 
-    return cb({ detail: error.message || 'Lookup Failed', err });
+    cb({ detail: error.message || 'Lookup Failed', err });
   }
-
-  Logger.trace({ lookupResults }, 'Lookup Results');
-  cb(null, lookupResults);
 };
 
 module.exports = {

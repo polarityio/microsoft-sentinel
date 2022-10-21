@@ -1,15 +1,17 @@
-const NodeCache = require('node-cache');
+const { ConfidentialClientApplication } = require('@azure/msal-node');
+const { get, flow, pick, join, concat, values, add, sum } = require('lodash/fp');
 
+const NodeCache = require('node-cache');
+const clientCache = new NodeCache();
 const tokenCache = new NodeCache({
   stdTTL: 30 * 60
 });
 
-const { isEqual } = require('lodash/fp');
 const { mapObject } = require('../dataTransformations');
-const globalState = require('../../integration');
+const { globalState } = require('../../integration');
 
-const authenticateRequest = async ({ site, route, ...requestOptions }) => {
-  const accessToken = await getAccessToken(site);
+const authenticateRequest = async ({ site, route, options, ...requestOptions }) => {
+  const accessToken = await getToken(site, options);
 
   return {
     ...requestOptions,
@@ -21,29 +23,25 @@ const authenticateRequest = async ({ site, route, ...requestOptions }) => {
   };
 };
 
-const getAccessToken = async (site) => {
-  const options = globalState.get('options');
+const getToken = async (site, options) => {
+  const clientId = flow(
+    pick(['clientId', 'tenantId', 'clientSecret']),
+    values,
+    join(''),
+    concat(site),
+    join('')
+  )(options);
 
-  const client = await getClient(options);
+  const client = await getClient(clientId, options);
 
-  const tokenId = options.clientId + options.tenantId + options.clientSecret + site;
-  let accessToken = tokenCache.get(tokenId);
-  if (!accessToken) {
-    accessToken = get(
-      'accessToken',
-      await client.acquireTokenByClientCredential({ scopes: [scopesBySite[site]] })
-    );
-    tokenCache.set(tokenId, accessToken);
-  }
+  const accessToken = await getAccessToken(clientId, client, site);
 
   return accessToken;
 };
 
-let client;
-let optionsCache;
-const getClient = async (options) => {
-  if (!client || !isEqual(options, optionsCache)) {
-    optionsCache = options;
+const getClient = async (clientId, options) => {
+  let client = clientCache.get(clientId);
+  if (!client) {
     const config = {
       auth: {
         clientId: options.clientId,
@@ -52,9 +50,24 @@ const getClient = async (options) => {
       }
     };
     client = new ConfidentialClientApplication(config);
+    //TODO: check later to make sure sensitive info not logged
     await client.setLogger(globalState.get('Logger'));
+    clientCache.set(clientId, client);
   }
   return client;
+};
+
+const getAccessToken = async (clientId, client, site) => {
+  let accessToken = tokenCache.get(clientId);
+  if (!accessToken) {
+    accessToken = get(
+      'accessToken',
+      await client.acquireTokenByClientCredential({ scopes: [scopesBySite[site]] })
+    );
+
+    tokenCache.set(clientId, accessToken);
+  }
+  return accessToken;
 };
 
 const urlBySite = {
