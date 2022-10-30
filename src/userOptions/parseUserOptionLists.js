@@ -1,11 +1,15 @@
-const { keys, values } = require("lodash/fp");
-const { allCombinations } = require("../dataTransformations");
-const { splitCommaSeparatedUserOption, splitKeyValueCommaSeparatedUserOption } = require("./utils");
-
+const { keys, values } = require('lodash/fp');
+const { allCombinations } = require('../dataTransformations');
+const {
+  splitCommaSeparatedUserOption,
+  splitKeyValueCommaSeparatedUserOption
+} = require('./utils');
 
 const parseUserOptionLists = (options) => {
+  const { Logger } = require('../../integration');
+
   const parsedSubscriptionIds = splitCommaSeparatedUserOption('subscriptionIds', options);
-  
+
   const parsedResourceGroupNames = splitCommaSeparatedUserOption(
     'resourceGroupNames',
     options
@@ -20,10 +24,12 @@ const parseUserOptionLists = (options) => {
     ['subscriptionId', 'resourceGroupName'],
     [parsedSubscriptionIds, parsedResourceGroupNames]
   );
+
   const allSubscriptionResourceAndWorkspaceCombinations = allCombinations(
     ['subscriptionId', 'resourceGroupName', 'workspaceName'],
     [parsedSubscriptionIds, parsedResourceGroupNames, keys(parsedWorkspaceNamesAndIds)]
   );
+
   const updatedOptions = {
     ...options,
     parsedSubscriptionIds,
@@ -34,7 +40,9 @@ const parseUserOptionLists = (options) => {
     allSubscriptionResourceAndWorkspaceCombinations
   };
 
-  return updatedOptions
-}
+  Logger({ test: 111111111111, updatedOptions });
+
+  return updatedOptions;
+};
 
 module.exports = parseUserOptionLists;

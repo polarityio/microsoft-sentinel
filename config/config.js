@@ -54,7 +54,7 @@ module.exports = {
     },
     {
       key: 'subscriptionIds',
-      name: 'TODO',
+      name: 'Sentinel Subscription IDs',
       description: 'TODO add instructions of where to get',
       default: '',
       type: 'text',
@@ -63,7 +63,7 @@ module.exports = {
     },
     {
       key: 'resourceGroupNames',
-      name: 'TODOs',
+      name: 'Sentinel Resource Group Names',
       description: 'TODO add instructions of where to get',
       default: '',
       type: 'text',
@@ -72,7 +72,7 @@ module.exports = {
     },
     {
       key: 'workspaceNamesAndIds',
-      name: 'TODOs',
+      name: 'Sentinel Workspace Names & IDs',
       description: 'TODO add instructions of where to get name: id, ',
       default: '',
       type: 'text',
@@ -93,14 +93,23 @@ module.exports = {
       key: 'kustoQuerySummaryFields',
       name: 'Kusto Query Summary Fields',
       description:
-        'Comma delimited list of field values to include as part of the summary (no spaces between commas).  These fields must be returned by your Kusto Query. This option must be set to "User can view and edit" or "User can view only".',
+        'Comma delimited list of field values to include as part of the summary.  These fields must be returned by your Kusto Query. This option must be set to "User can view and edit" or "User can view only".',
       default: '',
       type: 'text',
       userCanEdit: true,
       adminOnly: false
     },
     {
-      //TODO possibly make generic to all queries
+      key: 'kustoQueryIgnoreFields',
+      name: 'Kusto Query Ignore Fields',
+      description:
+        'Comma delimited list of Fields to ignore from the Kusto Query Results in the Overlay. This option must be set to "User can view and edit" or "User can view only".',
+      default: '',
+      type: 'text',
+      userCanEdit: true,
+      adminOnly: false
+    },
+    {
       key: 'lookbackDays',
       name: 'Lookback Days',
       description: 'TODO',

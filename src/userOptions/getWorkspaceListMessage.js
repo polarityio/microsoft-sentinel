@@ -1,23 +1,52 @@
-const { stubString } = require('lodash');
-const { size, get, flow, map, join, split, trim, __, values } = require('lodash/fp');
+const {
+  size,
+  get,
+  flow,
+  map,
+  join,
+  split,
+  trim,
+  values,
+  pick,
+  flatten,
+  concat,
+  __,
+  pickBy
+} = require('lodash/fp');
 const { requestWithDefaults } = require('../request');
 
 const getWorkspaceListMessage = async (options) => {
   if (size(options.workspaceNamesAndIds)) return [];
 
-  const subscriptionIds = flow(get(''), split(','), map(trim))(options);
+  const subscriptionIds = flow(get('subscriptionIds'), split(','), map(trim))(options);
 
   const workspaceListMessages = await Promise.all(
     map(getWorkspaceMessage(options), subscriptionIds)
   );
 
-  return workspaceListMessages;
+  const allWorkspaces = flow(map(get('names')), join(', '), (allWorkspacesNames) => [
+    {
+      key: 'workspaceNamesAndIds',
+      message: `******** All Workspaces ********:`
+    },
+    {
+      key: 'workspaceNamesAndIds',
+      message: allWorkspacesNames
+    }
+  ])(workspaceListMessages);
+  
+  return flow(
+    map(get('messages')),
+    concat({ key: 'workspaceNamesAndIds', message: '* Required ->' }),
+    flatten,
+    concat(__, allWorkspaces)
+  )(workspaceListMessages);
 };
 
 // Request Documentation: https://learn.microsoft.com/en-us/rest/api/loganalytics/workspaces/list?tabs=HTTP
 const getWorkspaceMessage = (options) => async (subscriptionId) => {
   const workspaces = get(
-    'body',
+    'body.value',
     await requestWithDefaults({
       site: 'management',
       route: `subscriptions/${subscriptionId}/providers/Microsoft.OperationalInsights/workspaces?api-version=2021-12-01-preview`,
@@ -25,18 +54,31 @@ const getWorkspaceMessage = (options) => async (subscriptionId) => {
     })
   );
 
-  const message = flow(
-    map(flow(pick(['name', 'properties.customerId']), values, join(': '))),
-    join(', '),
-    size(workspaces)
-      ? concat(`* Required - Available Workspaces for "${subscriptionId}": \n`, __)
-      : stubString
+  const names = flow(
+    map(
+      flow(
+        (workspace) => [get('name', workspace), get('properties.customerId', workspace)],
+        values,
+        join(': ')
+      )
+    ),
+    join(', ')
   )(workspaces);
 
-  return {
-    key: 'workspaceNamesAndIds',
-    message
-  };
+  const messages = size(workspaces)
+    ? [
+        {
+          key: 'workspaceNamesAndIds',
+          message: `*** Subscription "${subscriptionId}" Workspaces ***:`
+        },
+        {
+          key: 'workspaceNamesAndIds',
+          message: names
+        }
+      ]
+    : [];
+
+  return { messages, names };
 };
 
 module.exports = getWorkspaceListMessage;

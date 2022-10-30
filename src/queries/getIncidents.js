@@ -1,4 +1,4 @@
-const { flatMap, flow, get, toLower } = require('lodash/fp');
+const { flatMap, flow, get, toLower, map, join, replace } = require('lodash/fp');
 const { MAX_DISPLAY_RESULTS } = require('../constants');
 const { requestsInParallel } = require('../request');
 const { getIdMetaData, getDaysBackFormattedDate } = require('./utils');
@@ -19,7 +19,8 @@ const getIncidents = async (entities, options) => {
             $filter: buildIncidentFilterQuery(entity, options),
             $orderby: 'properties/lastModifiedTimeUtc desc',
             $top: MAX_DISPLAY_RESULTS
-          }
+          },
+          options
         }),
         entities
       )
@@ -46,8 +47,7 @@ const buildIncidentFilterQuery = (entity, options) => {
   return (
     "(properties/status eq 'New' or properties/status eq 'Active') and " +
     buildLookbackQuerySection(options) +
-    //TODO: check if extra parentheses
-    `(properties/labels/any(item: contains(toLower(item/labelName), '${entityValue}')))) or ` +
+    `(properties/labels/any(item: contains(toLower(item/labelName), '${entityValue}'))) or ` +
     buildFieldContainsQueries(queryPaths, entityValue)
   );
 };

@@ -1,4 +1,4 @@
-const { flow, get, eq, first } = require('lodash/fp');
+const { flow, get, eq, first, map, filter } = require('lodash/fp');
 const { requestsInParallel } = require('../request');
 
 // Request Documentation: https://learn.microsoft.com/en-us/rest/api/securityinsights/preview/ip-geodata/get?tabs=HTTP&tryIt=true&source=docs
@@ -15,7 +15,7 @@ const getIpGeodata = async (entities, options) => {
           route: `subscriptions/${subscriptionId}/resourceGroups/${resourceGroupName}/providers/Microsoft.SecurityInsights/enrichment/ip/geodata/`,
           qs: {
             'api-version': '2022-07-01-preview',
-            domain: entity.value
+            ipaddress: entity.value
           },
           options
         }),

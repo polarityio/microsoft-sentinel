@@ -1,4 +1,3 @@
-const { splitOutIgnoredIps, standardizeEntityTypes } = require('./dataTransformations');
 const createLookupResults = require('./createLookupResults');
 const {
   getIndicators,
@@ -9,25 +8,26 @@ const {
 } = require('./queries');
 
 const getLookupResults = async (entities, options) => {
-  const { entitiesPartition, ignoredIpLookupResults } = splitOutIgnoredIps(entities);
-
-  const indicators = await getIndicators(entitiesPartition, options);
-  const incidents = await getIncidents(entitiesPartition, options);
-  const domainWhois = await getDomainWhois(entitiesPartition, options);
-  const ipGeodata = await getIpGeodata(entitiesPartition, options);
-  const kustoQueryResults = await getKustoQueryResults(entitiesPartition, options);
+  const [indicators, incidents, domainWhois, ipGeodata, kustoQueryResults] =
+    await Promise.all([
+      getIndicators(entities, options),
+      getIncidents(entities, options),
+      getDomainWhois(entities, options),
+      getIpGeodata(entities, options),
+      getKustoQueryResults(entities, options)
+    ]);
 
   const lookupResults = createLookupResults(
+    entities,
+    options,
     indicators,
     incidents,
     domainWhois,
     ipGeodata,
-    kustoQueryResults,
-    entitiesPartition,
-    options
+    kustoQueryResults
   );
 
-  return lookupResults.concat(ignoredIpLookupResults);
+  return lookupResults
 };
 
 module.exports = getLookupResults;

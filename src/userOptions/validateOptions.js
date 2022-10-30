@@ -1,3 +1,5 @@
+const { size } = require('lodash/fp');
+
 const { flattenOptions, validateStringOptions } = require('./utils');
 const getSubscriptionsListMessage = require('./getSubscriptionsListMessage');
 const getResourceGroupListMessage = require('./getResourceGroupListMessage');
@@ -21,11 +23,11 @@ const validateOptions = async (options, callback) => {
     ? await getSubscriptionsListMessage(flattenedOptions)
     : [];
 
-  const [resourceGroupListMessage, workspaceListMessage] = !size(subscriptionsListMessage)
-    ? await Promise.all(
+  const [resourceGroupListMessage, workspaceListMessage] = !(size(subscriptionsListMessage) || size(stringValidationErrors))
+    ? await Promise.all([
         getResourceGroupListMessage(flattenedOptions),
         getWorkspaceListMessage(flattenedOptions)
-      )
+      ])
     : [[], []];
 
   //TODO: validate the workspaceNamesAndIds user option to ensure each comma separated section has a ":"

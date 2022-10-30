@@ -1,5 +1,5 @@
 const m = require('moment');
-const { split, flow, get, replace } = require('lodash/fp');
+const { split, flow, get, replace, map } = require('lodash/fp');
 
 const getIdMetaData = (records) =>
   map((record) => {

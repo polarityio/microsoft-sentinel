@@ -1,14 +1,14 @@
-const { flow, get, size, find, eq, flatMap } = require('lodash/fp');
+const { flow, get, size, find, eq, flatMap, reduce } = require('lodash/fp');
 const map = require('lodash/fp/map').convert({ cap: false });
 
 const createLookupResults = (
+  entities,
+  options,
   indicators,
   incidents,
   domainWhois,
   ipGeodata,
-  kustoQueryResults,
-  entities,
-  options
+  kustoQueryResults
 ) =>
   map((entity) => {
     const resultsForThisEntity = getResultsForThisEntity(
@@ -32,7 +32,6 @@ const createLookupResults = (
 
     return lookupResult;
   }, entities);
-
 
 const getResultsForThisEntity = (
   entity,
@@ -62,7 +61,7 @@ const getResultsForThisEntity = (
     ipGeodata: ipGeodataForThisEntity,
     kustoQueryResults: kustoQueryResultsForThisEntity
   };
-}
+};
 
 const getFormattedKustoQueryResultForThisEntity = (entity, kustoQueryResults) => {
   const kustoQueryResultForThisEntity = flow(
@@ -70,20 +69,31 @@ const getFormattedKustoQueryResultForThisEntity = (entity, kustoQueryResults) =>
     get('body.tables')
   )(kustoQueryResults);
 
-  const formattedResultsTable = map(
-    (table) => ({
-      tableName: table.name,
-      tableFields: flatMap(
-        (row) =>
-          map((column, index) => ({ ...column, value: get(index, row) }), columns).concat(
-            { type: 'endOfRow' }
-          ),
-        table.rows
-      )
-    }),
+  const formattedResultsTable = reduce(
+    (agg, table) =>
+      size(table.rows)
+        ? [
+            ...agg,
+            {
+              tableName: table.name,
+              tableFields: flatMap(
+                (row) =>
+                  map(
+                    (column, index) => ({ ...column, value: get(index, row) }),
+                    table.columns
+                  ).concat({ type: 'endOfRow' }),
+                table.rows
+              )
+            }
+          ]
+        : agg,
+    [],
     kustoQueryResultForThisEntity
   );
+  const { Logger } = require('../integration');
+  Logger({ test: 616161616161661, kustoQueryResultForThisEntity, formattedResultsTable });
 
   return formattedResultsTable;
 };
+
 module.exports = createLookupResults;

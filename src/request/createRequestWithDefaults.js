@@ -4,7 +4,6 @@ const request = require('postman-request');
 const { get } = require('lodash/fp');
 
 const { ERROR_MESSAGES } = require('../../src/constants');
-const { globalState } = require('../../integration');
 const authenticateRequest = require('./authenticateRequest');
 
 const SUCCESSFUL_ROUNDED_REQUEST_STATUS_CODES = [200];
@@ -71,7 +70,7 @@ const createRequestWithDefaults = () => {
   };
 
   const checkForStatusError = ({ statusCode, body }, requestOptions) => {
-    const Logger = globalState.get('Logger');
+    const { Logger } = require('../../integration');
 
     const requestOptionsWithoutSensitiveData = {
       ...requestOptions,
@@ -82,12 +81,15 @@ const createRequestWithDefaults = () => {
       }
     };
 
-    Logger.trace({
-      MESSAGE: 'Request Ran, Checking Status...',
-      statusCode,
-      requestOptions: requestOptionsWithoutSensitiveData,
-      responseBody: body
-    });
+    Logger(
+      {
+        MESSAGE: 'Request Ran, Checking Status...',
+        statusCode,
+        requestOptions: requestOptionsWithoutSensitiveData,
+        responseBody: body
+      },
+      'trace'
+    );
 
     const roundedStatus = Math.round(statusCode / 100) * 100;
     const statusCodeNotSuccessful =
@@ -103,6 +105,7 @@ const createRequestWithDefaults = () => {
     }
   };
 
+  // TODO: create error handling around "AuthorizationFailed" errors
   const requestDefaultsWithInterceptors = requestWithDefaultsBuilder(authenticateRequest);
 
   return requestDefaultsWithInterceptors;

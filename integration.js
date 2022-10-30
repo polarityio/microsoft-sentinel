@@ -1,37 +1,45 @@
 'use strict';
-
-const { validateOptions } = require('./src/userOptions');
-
+const { validateOptions, parseUserOptionLists } = require('./src/userOptions');
 const getLookupResults = require('./src/getLookupResults');
-const { parseErrorToReadableJSON } = require('./src/dataTransformations');
+const {
+  splitOutIgnoredIps,
+  standardizeEntityTypes,
+  parseErrorToReadableJSON
+} = require('./src/dataTransformations');
+const { last, slice, concat } = require('lodash/fp');
 
-const NodeCache = require('node-cache');
-const globalState = new NodeCache(); //TODO: make user specific abstraction
-
-let Logger;
-const startup = async (logger) => {
-  globalState.set('Logger', logger);
-  Logger = logger;
+let logger;
+const startup = (_logger) => {
+  logger = _logger
+};
+const Logger = (...args) => {
+  const lastArg = last(args);
+  const lastArgIsLevel = ['trace', 'debug', 'info', 'warn', 'error', 'fatal'].includes(
+    lastArg
+  );
+  const loggingLevel = lastArgIsLevel ? lastArg : 'info';
+  const logArgs = lastArgIsLevel ? slice(0, -1, args) : args;
+  logger[loggingLevel](...logArgs);
 };
 
 const doLookup = async (entities, options, cb) => {
   try {
-    Logger.debug({ entities }, 'Entities');
+    Logger({ entities }, 'Entities', 'debug');
 
-    const entitiesWithCustomTypesSpecified = standardizeEntityTypes(entities);
-
+    const { entitiesPartition, ignoredIpLookupResults } = splitOutIgnoredIps(entities);
+    const entitiesWithCustomTypesSpecified = standardizeEntityTypes(entitiesPartition);
     const optionsWithUpdatedLists = parseUserOptionLists(options);
 
-    const lookupResults = await getLookupResults(
-      entitiesWithCustomTypesSpecified,
-      optionsWithUpdatedLists
+    const lookupResults = concat(
+      await getLookupResults(entitiesWithCustomTypesSpecified, optionsWithUpdatedLists),
+      ignoredIpLookupResults
     );
 
-    Logger.trace({ lookupResults }, 'Lookup Results');
+    Logger({ lookupResults }, 'Lookup Results', 'trace');
     cb(null, lookupResults);
   } catch (error) {
     const err = parseErrorToReadableJSON(error);
-    Logger.error({ error, formattedError: err }, 'Get Lookup Results Failed');
+    Logger({ error, formattedError: err }, 'Get Lookup Results Failed', 'error');
 
     cb({ detail: error.message || 'Lookup Failed', err });
   }
@@ -41,5 +49,5 @@ module.exports = {
   startup,
   validateOptions,
   doLookup,
-  globalState
+  Logger
 };

@@ -1,9 +1,9 @@
-const { flatMap, flow, get } = require('lodash/fp');
+const { flatMap, flow, get, map } = require('lodash/fp');
 const { MAX_DISPLAY_RESULTS } = require('../constants');
 const { requestsInParallel } = require('../request');
 const { getIdMetaData } = require('./utils');
 
-
+// Request Documentation: https://learn.microsoft.com/en-us/rest/api/securityinsights/stable/threat-intelligence-indicator/query-indicators
 const getIndicators = async (entities, options) => {
   const indicatorRequests = flow(
     get('allSubscriptionResourceAndWorkspaceCombinations'),

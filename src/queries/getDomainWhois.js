@@ -1,4 +1,4 @@
-const { flow, get, eq, first } = require('lodash/fp');
+const { flow, get, eq, first, filter, map } = require('lodash/fp');
 const { requestsInParallel } = require('../request');
 
 // Request Documentation: https://learn.microsoft.com/en-us/rest/api/securityinsights/preview/domain-whois/get?tabs=HTTP&tryIt=true&source=docs

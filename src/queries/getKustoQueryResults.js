@@ -1,9 +1,6 @@
-const { map } = require('lodash');
-const m = require('moment');
-
-const { flow, flatMap, get, eq, first, replace, values } = require('lodash/fp');
+const { flow, flatMap, replace, values, map, chunk, flatten } = require('lodash/fp');
 const { requestsInParallel } = require('../request');
-const { escapeQuotes } = require('./utils');
+const { escapeQuotes, getDaysBackFormattedDate } = require('./utils');
 
 // Request Documentation: https://learn.microsoft.com/en-us/rest/api/loganalytics/dataaccess/query/batch?tabs=HTTP
 const getKustoQueryResults = async (entities, options) => {
@@ -18,19 +15,25 @@ const getKustoQueryResults = async (entities, options) => {
     flatMap((entitiesChunk) =>
       map(
         (workspaceId) =>
-          createBatchLogRequest(entitiesChunk, workspaceId, queryHttpPathWithTimestamp),
+          createBatchLogRequest(
+            entitiesChunk,
+            workspaceId,
+            queryHttpPathWithTimestamp,
+            options
+          ),
         workspaceIds
       )
     )
   )(entities);
 
-  //TODO: make queries be associated with 
-  const kustoQuery = await requestsInParallel(kustoQueryRequests, 'body.responses');
+  const kustoQueryResult = flatten(
+    await requestsInParallel(kustoQueryRequests, 'body.responses')
+  );
 
-  return kustoQuery;
+  return kustoQueryResult;
 };
 
-const createBatchLogRequest = (entities, workspace, path) => ({
+const createBatchLogRequest = (entities, workspace, path, options) => ({
   method: 'POST',
   site: 'logs',
   route: 'v1/$batch',

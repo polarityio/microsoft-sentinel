@@ -1,4 +1,5 @@
 const { parallelLimit } = require('async');
+const { map, get } = require('lodash/fp');
 const createRequestWithDefaults = require('./createRequestWithDefaults');
 
 const requestWithDefaults = createRequestWithDefaults();
