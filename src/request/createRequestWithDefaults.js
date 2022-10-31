@@ -1,10 +1,11 @@
 const fs = require('fs');
 
 const request = require('postman-request');
-const { get } = require('lodash/fp');
+const { get, identity } = require('lodash/fp');
 
 const { ERROR_MESSAGES } = require('../../src/constants');
 const authenticateRequest = require('./authenticateRequest');
+const handleRequestErrorsForServices = require('./handleRequestErrorsForServices');
 
 const SUCCESSFUL_ROUNDED_REQUEST_STATUS_CODES = [200];
 
@@ -106,7 +107,11 @@ const createRequestWithDefaults = () => {
   };
 
   // TODO: create error handling around "AuthorizationFailed" errors
-  const requestDefaultsWithInterceptors = requestWithDefaultsBuilder(authenticateRequest);
+  const requestDefaultsWithInterceptors = requestWithDefaultsBuilder(
+    authenticateRequest,
+    identity,
+    handleRequestErrorsForServices(requestWithDefaultsBuilder)
+  );
 
   return requestDefaultsWithInterceptors;
 };

@@ -6,12 +6,20 @@ const {
 } = require('./utils');
 
 const parseUserOptionLists = (options) => {
-  const { Logger } = require('../../integration');
-
   const parsedSubscriptionIds = splitCommaSeparatedUserOption('subscriptionIds', options);
 
   const parsedResourceGroupNames = splitCommaSeparatedUserOption(
     'resourceGroupNames',
+    options
+  );
+  
+  const parsedKustoQueryIgnoreFields = splitCommaSeparatedUserOption(
+    'kustoQueryIgnoreFields',
+    options
+  );
+
+  const parsedKustoQuerySummaryFields = splitCommaSeparatedUserOption(
+    'kustoQuerySummaryFields',
     options
   );
 
@@ -35,12 +43,12 @@ const parseUserOptionLists = (options) => {
     parsedSubscriptionIds,
     parsedResourceGroupNames,
     parsedWorkspaceNamesAndIds,
+    parsedKustoQueryIgnoreFields,
+    parsedKustoQuerySummaryFields,
     workspaceIds: values(parsedWorkspaceNamesAndIds),
     allSubscriptionAndResourceCombinations,
     allSubscriptionResourceAndWorkspaceCombinations
   };
-
-  Logger({ test: 111111111111, updatedOptions });
 
   return updatedOptions;
 };

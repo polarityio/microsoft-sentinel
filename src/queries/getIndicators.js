@@ -5,6 +5,7 @@ const { getIdMetaData } = require('./utils');
 
 // Request Documentation: https://learn.microsoft.com/en-us/rest/api/securityinsights/stable/threat-intelligence-indicator/query-indicators
 const getIndicators = async (entities, options) => {
+  // Could make faster by doing aggregate requests similar to ./src/queries/getKustoQueryResults.js
   const indicatorRequests = flow(
     get('allSubscriptionResourceAndWorkspaceCombinations'),
     flatMap(({ subscriptionId, resourceGroupName, workspaceName }) =>
@@ -15,7 +16,7 @@ const getIndicators = async (entities, options) => {
           site: 'management',
           route: `subscriptions/${subscriptionId}/resourceGroups/${resourceGroupName}/providers/Microsoft.OperationalInsights/workspaces/${workspaceName}/providers/Microsoft.SecurityInsights/threatIntelligence/main/queryIndicators?api-version=2021-10-01`,
           body: {
-            keyword: entity.value,
+            keywords: entity.value,
             pageSize: MAX_DISPLAY_RESULTS
           },
           options

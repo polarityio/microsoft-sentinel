@@ -1,5 +1,21 @@
-const { flow, get, size, find, eq, flatMap, reduce } = require('lodash/fp');
-const map = require('lodash/fp/map').convert({ cap: false });
+const { uniq } = require('lodash');
+const {
+  flow,
+  get,
+  size,
+  find,
+  eq,
+  flatMap,
+  map,
+  includes,
+  values,
+  some,
+  keys,
+  filter,
+  __,
+  compact
+} = require('lodash/fp');
+const reduce = require('lodash/fp/reduce').convert({ cap: false });
 
 const createLookupResults = (
   entities,
@@ -13,6 +29,7 @@ const createLookupResults = (
   map((entity) => {
     const resultsForThisEntity = getResultsForThisEntity(
       entity,
+      options,
       indicators,
       incidents,
       domainWhois,
@@ -22,9 +39,9 @@ const createLookupResults = (
 
     const lookupResult = {
       entity,
-      data: size(resultsForThisEntity)
+      data: flow(values, some(flow(keys, size)))(resultsForThisEntity)
         ? {
-            summary: [],
+            summary: createSummaryTags(resultsForThisEntity, options),
             details: resultsForThisEntity
           }
         : null
@@ -35,6 +52,7 @@ const createLookupResults = (
 
 const getResultsForThisEntity = (
   entity,
+  options,
   indicators,
   incidents,
   domainWhois,
@@ -51,19 +69,26 @@ const getResultsForThisEntity = (
 
   const kustoQueryResultsForThisEntity = getFormattedKustoQueryResultForThisEntity(
     entity,
+    options,
     kustoQueryResults
   );
 
   return {
-    indicators: indicatorsForThisEntity,
-    incidents: incidentsForThisEntity,
+    ...(!!size(indicatorsForThisEntity) && { indicators: indicatorsForThisEntity }),
+    ...(!!size(incidentsForThisEntity) && { incidents: incidentsForThisEntity }),
+    ...(!!size(kustoQueryResultsForThisEntity) && {
+      kustoQueryResults: kustoQueryResultsForThisEntity
+    }),
     domainWhois: domainWhoisForThisEntity,
-    ipGeodata: ipGeodataForThisEntity,
-    kustoQueryResults: kustoQueryResultsForThisEntity
+    ipGeodata: ipGeodataForThisEntity
   };
 };
 
-const getFormattedKustoQueryResultForThisEntity = (entity, kustoQueryResults) => {
+const getFormattedKustoQueryResultForThisEntity = (
+  entity,
+  options,
+  kustoQueryResults
+) => {
   const kustoQueryResultForThisEntity = flow(
     find(flow(get('id'), eq(entity.value))),
     get('body.tables')
@@ -76,24 +101,81 @@ const getFormattedKustoQueryResultForThisEntity = (entity, kustoQueryResults) =>
             ...agg,
             {
               tableName: table.name,
-              tableFields: flatMap(
-                (row) =>
-                  map(
-                    (column, index) => ({ ...column, value: get(index, row) }),
-                    table.columns
-                  ).concat({ type: 'endOfRow' }),
-                table.rows
-              )
+              tableFields: getTableFields(table, options)
             }
           ]
         : agg,
     [],
     kustoQueryResultForThisEntity
   );
-  const { Logger } = require('../integration');
-  Logger({ test: 616161616161661, kustoQueryResultForThisEntity, formattedResultsTable });
 
   return formattedResultsTable;
 };
 
+const getTableFields = (table, options) =>
+  flatMap(
+    (row) =>
+      reduce(
+        (agg, column, index) => {
+          const columnIsIncludedInIgnoreFields = flow(
+            get('parsedKustoQueryIgnoreFields'),
+            includes(get('name', column))
+          )(options);
+
+          return columnIsIncludedInIgnoreFields
+            ? agg
+            : [...agg, { ...column, value: get(index, row) }];
+        },
+        [],
+        table.columns
+      ).concat({ type: 'endOfRow' }),
+    table.rows
+  );
+
+const createSummaryTags = (
+  { indicators, incidents, domainWhois, ipGeodata, kustoQueryResults },
+  options
+) => {
+  const indicatorsTags = size(indicators) ? [`Indicators: ${size(indicators)}`] : [];
+  const incidentsTags = size(incidents) ? [`Incidents: ${size(incidents)}`] : [];
+
+  const totalKustoQueryResultsRows = flow(
+    flatMap(flow(get('tableFields'), filter(flow(get('type'), eq('endOfRow'))))),
+    size
+  )(kustoQueryResults);
+
+  const customKustoTagsFromOptions = flow(
+    flatMap(
+      flow(
+        get('tableFields'),
+        reduce(
+          (agg, field) =>
+            flow(get('name'), includes(__, options.parsedKustoQuerySummaryFields))(field)
+              ? [...agg, `${field.name}: ${field.value}`]
+              : agg,
+          []
+        )
+      )
+    ),
+    compact,
+    uniq
+  )(kustoQueryResults);
+
+  const kustoQueryResultsTags = (
+    totalKustoQueryResultsRows ? [`Logs: ${totalKustoQueryResultsRows}`] : []
+  ).concat(size(customKustoTagsFromOptions) ? customKustoTagsFromOptions : []);
+
+  //TODO add ignore geo and whois here
+  const ipGeodataTags = flow(keys, size)(ipGeodata) ? [`Geodata`] : [];
+  const domainWhoisTags = flow(keys, size)(domainWhois) ? [`WHOIS`] : [];
+
+  return []
+    .concat(indicatorsTags)
+    .concat(incidentsTags)
+    .concat(kustoQueryResultsTags)
+    .concat(ipGeodataTags)
+    .concat(domainWhoisTags);
+};
+
+const asdf = (options) => {}
 module.exports = createLookupResults;

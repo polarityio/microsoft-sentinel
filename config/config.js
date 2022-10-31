@@ -118,5 +118,6 @@ module.exports = {
       userCanEdit: true,
       adminOnly: false
     }
+    // Could add checkbox option ignoring results that only have Geodata or WHOIS data to filter out less relevant results
   ]
 };
