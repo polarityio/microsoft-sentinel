@@ -27,7 +27,7 @@ const getLookupResults = async (entities, options) => {
     kustoQueryResults
   );
 
-  return lookupResults
+  return lookupResults;
 };
 
 module.exports = getLookupResults;

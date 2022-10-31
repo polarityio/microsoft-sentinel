@@ -192,7 +192,6 @@ const standardizeEntityTypes = (entities) =>
     entities
   );
 
-
 // allCombinations(['a', 'b'], [[1,2],[4,5]]) --> outputs [ { a: 1, b: 4 }, { a: 1, b: 5 }, { a: 2, b: 4 }, { a: 2, b: 5 } ]
 const allCombinations = (
   [dimensionName, ...remainingDimensionNames],

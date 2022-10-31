@@ -61,7 +61,7 @@ const buildLookbackQuerySection = (options) => {
     `(properties/lastModifiedTimeUtc ge ${startDateTime} and ` +
     `properties/lastModifiedTimeUtc le ${endDateTime}) and `
   );
-}
+};
 
 const buildFieldContainsQueries = (queryPaths, entityValue) =>
   `(${flow(
@@ -75,7 +75,5 @@ const buildFieldContainsQueries = (queryPaths, entityValue) =>
     ),
     join(' or ')
   )(queryPaths)})`;
-
-
 
 module.exports = getIncidents;

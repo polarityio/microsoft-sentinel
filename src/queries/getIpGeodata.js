@@ -3,7 +3,7 @@ const { requestsInParallel } = require('../request');
 
 // Request Documentation: https://learn.microsoft.com/en-us/rest/api/securityinsights/preview/ip-geodata/get?tabs=HTTP&tryIt=true&source=docs
 const getIpGeodata = async (entities, options) => {
-  const domainEntities = filter(flow(get('type'), eq('IPv4')), entities); 
+  const domainEntities = filter(flow(get('type'), eq('IPv4')), entities);
   const ipGeodataRequests = flow(
     get('allSubscriptionAndResourceCombinations'),
     first,

@@ -1,16 +1,50 @@
-# Polarity __TODO__ Integration
+# Polarity Microsoft Sentinel Integration
 
 ![image](https://img.shields.io/badge/status-beta-green.svg)
 
-TODO: desc
+Microsoft Sentinel puts the cloud and large-scale intelligence from decades of Microsoft security experience to work. 
+The Polarity Microsoft Sentinel Integration allows users to search for WHOIS, Geolocation 
+Data, Incidents, Threat Intelligence Indicators, and Query Logs via Kusto Queries for Domains, IP Addresses, and Hashes.
+
+To learn more about Microsoft Sentinel, visit the [official website](__TODO__).
 
 
+## Microsoft Sentinel Integration Options
+### Azure AD Registered App Client/Application ID
+Your Azure AD Registered App's Client ID associated with your Microsoft Sentinel Instance.
 
-To learn more about __TODO__, visit the [official website](__TODO__).
+### Azure AD Registered App Tenant/Directory ID
+Your Azure AD Registered App's Tenant ID associated with your Microsoft Sentinel Instance.
 
+### Azure AD Registered App Client Secret
+Your Azure AD Registered App's Client Secret associated with your Microsoft Sentinel Instance.
 
-## __TODO__ Integration Options
-__TODO__
+### Sentinel Subscription ID',
+The Subscription ID associated with your Microsoft Sentinel Instance.
+
+### Sentinel Resource Group Name
+The Resource Group Name associated with your Microsoft Sentinel Instance.
+
+### Sentinel Workspace Name & ID
+The {{WORKSPACE_NAME}}:{{WORKSPACE_ID}} for the workspace associated with your Microsoft Sentinel Instance.
+(e.g. sentinel-workspace1: 8dbg2cdf-fd06-42zf-8557-4606c98adb2a)
+
+### Kusto Query String
+Kusto Query String to execute on the Sentinel Log Analytics Workspace. 
+The string `{{ENTITY}}` will be replace by the looked up Entity. 
+For example: ThreatIntelligenceIndicator | search "{{ENTITY}}" | take 10
+
+### Kusto Query Summary Fields
+Comma delimited list of field values to include as part of the summary.  
+These fields must be returned by your Kusto Query to appear in the Summary Tags. 
+This option must be set to "User can view and edit" or "User can view only"
+
+### Kusto Query Ignore Fields
+Comma delimited list of Fields to ignore from the Kusto Query Results in the Overlay. 
+This option must be set to "User can view and edit" or "User can view only".
+
+### Lookback Days
+The number of days to look back when querying logs, and incidents.
 
 ## Installation Instructions
 

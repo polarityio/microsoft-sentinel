@@ -2,13 +2,17 @@ const { keys, values } = require('lodash/fp');
 const { allCombinations } = require('../dataTransformations');
 const {
   splitCommaSeparatedUserOption,
-  splitKeyValueCommaSeparatedUserOption
+  splitCommaSeparatedUserOptionThenFirst,
+  splitKeyValueCommaSeparatedUserOptionThenFirst
 } = require('./utils');
 
 const parseUserOptionLists = (options) => {
-  const parsedSubscriptionIds = splitCommaSeparatedUserOption('subscriptionIds', options);
+  const parsedSubscriptionIds = splitCommaSeparatedUserOptionThenFirst(
+    'subscriptionIds',
+    options
+  );
 
-  const parsedResourceGroupNames = splitCommaSeparatedUserOption(
+  const parsedResourceGroupNames = splitCommaSeparatedUserOptionThenFirst(
     'resourceGroupNames',
     options
   );
@@ -23,7 +27,7 @@ const parseUserOptionLists = (options) => {
     options
   );
 
-  const parsedWorkspaceNamesAndIds = splitKeyValueCommaSeparatedUserOption(
+  const parsedWorkspaceNamesAndIds = splitKeyValueCommaSeparatedUserOptionThenFirst(
     'workspaceNamesAndIds',
     options
   );

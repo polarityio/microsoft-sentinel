@@ -25,10 +25,7 @@ const getDaysBackFormattedDate = (daysBack) =>
     ? m().subtract(daysBack, 'days').format('YYYY-MM-DDTHH:mm:ss.SSS')
     : m().format('YYYY-MM-DDTHH:mm:ss.SSS')) + 'Z';
 
-const escapeQuotes = flow(
-  replace(/(\r\n|\n|\r)/gm, ''),
-  replace(/"/g, '')
-);
+const escapeQuotes = flow(replace(/(\r\n|\n|\r)/gm, ''), replace(/"/g, ''));
 
 module.exports = {
   getIdMetaData,

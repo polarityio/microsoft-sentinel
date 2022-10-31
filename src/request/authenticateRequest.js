@@ -8,7 +8,6 @@ const tokenCache = new NodeCache({
   stdTTL: 30 * 60
 });
 
-
 const authenticateRequest = async ({ site, route, options, ...requestOptions }) => {
   const accessToken = await getToken(site, options);
 

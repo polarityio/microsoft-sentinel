@@ -7,11 +7,9 @@ const {
   split,
   trim,
   values,
-  pick,
   flatten,
   concat,
-  __,
-  pickBy
+  __
 } = require('lodash/fp');
 const { requestWithDefaults } = require('../request');
 
@@ -34,7 +32,7 @@ const getWorkspaceListMessage = async (options) => {
       message: allWorkspacesNames
     }
   ])(workspaceListMessages);
-  
+
   return flow(
     map(get('messages')),
     concat({ key: 'workspaceNamesAndIds', message: '* Required ->' }),

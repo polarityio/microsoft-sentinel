@@ -106,7 +106,6 @@ const createRequestWithDefaults = () => {
     }
   };
 
-  // TODO: create error handling around "AuthorizationFailed" errors
   const requestDefaultsWithInterceptors = requestWithDefaultsBuilder(
     authenticateRequest,
     identity,

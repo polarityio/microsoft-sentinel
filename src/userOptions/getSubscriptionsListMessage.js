@@ -1,4 +1,4 @@
-const { size, get, flow, map, join, reduce, concat, __, compact } = require('lodash/fp');
+const { size, get, flow, map, join, reduce, compact } = require('lodash/fp');
 const { requestWithDefaults } = require('../request');
 
 // Request Documentation: https://learn.microsoft.com/en-us/rest/api/resources/subscriptions/list?tabs=HTTP

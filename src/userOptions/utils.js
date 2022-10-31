@@ -1,4 +1,16 @@
-const { isEmpty, get, curry, flow, split, map, zipObject, trim, uniq, compact } = require('lodash/fp');
+const {
+  isEmpty,
+  get,
+  curry,
+  flow,
+  split,
+  map,
+  zipObject,
+  trim,
+  uniq,
+  compact,
+  first
+} = require('lodash/fp');
 const { transpose2DArray } = require('../dataTransformations');
 const reduce = require('lodash/fp/reduce').convert({ cap: false });
 
@@ -22,11 +34,13 @@ const validateStringOptions = (stringOptionsErrorMessages, options, otherErrors 
       : agg;
   }, otherErrors)(stringOptionsErrorMessages);
 
-
-
 const splitCommaSeparatedUserOption = curry((key, options) =>
   flow(get(key), split(','), map(trim), compact, uniq)(options)
 );
+
+const splitCommaSeparatedUserOptionThenFirst = curry((key, options) => [
+  first(splitCommaSeparatedUserOption(key, options))
+]);
 
 const splitKeyValueCommaSeparatedUserOption = (key, options) =>
   flow(
@@ -36,10 +50,20 @@ const splitKeyValueCommaSeparatedUserOption = (key, options) =>
     ([keys, values]) => zipObject(keys, values)
   )(options);
 
+const splitKeyValueCommaSeparatedUserOptionThenFirst = (key, options) =>
+  flow(
+    splitCommaSeparatedUserOption(key),
+    map(flow(split(':'), map(trim))),
+    ([first]) => [first],
+    transpose2DArray,
+    ([keys, values]) => zipObject(keys, values)
+  )(options);
 
 module.exports = {
   flattenOptions,
   validateStringOptions,
   splitCommaSeparatedUserOption,
-  splitKeyValueCommaSeparatedUserOption
+  splitKeyValueCommaSeparatedUserOption,
+  splitCommaSeparatedUserOptionThenFirst,
+  splitKeyValueCommaSeparatedUserOptionThenFirst
 };

@@ -1,7 +1,7 @@
 module.exports = {
   name: 'Microsoft Sentinel',
   acronym: 'MS-SNTL',
-  description: 'TODO',
+  description: 'Search for WHOIS, Geolocation Data, Incidents, Threat Intelligence Indicators, and Query Logs via Kusto Queries',
   entityTypes: ['domain', 'IPv4', 'email', 'hash', 'MAC'],
   styles: ['./styles/styles.less'],
   defaultColor: 'light-blue',
@@ -22,13 +22,14 @@ module.exports = {
     rejectUnauthorized: true
   },
   logging: {
-    level: 'trace' //trace, debug, info, warn, error, fatal
+    level: 'info' //trace, debug, info, warn, error, fatal
   },
   options: [
     {
       key: 'clientId',
-      name: 'Azure AD Registered App Application (client) ID',
-      description: 'TODO add instructions of where to get',
+      name: 'Azure AD Registered App Client/Application ID',
+      description:
+        "Your Azure AD Registered App's Client ID associated with your Microsoft Sentinel Instance.",
       default: '',
       type: 'text',
       userCanEdit: false,
@@ -36,8 +37,9 @@ module.exports = {
     },
     {
       key: 'tenantId',
-      name: 'Azure AD Registered App Directory (tenant) ID',
-      description: 'TODO add instructions of where to get',
+      name: 'Azure AD Registered App Tenant/Directory ID',
+      description:
+        "Your Azure AD Registered App's Tenant ID associated with your Microsoft Sentinel Instance.",
       default: '',
       type: 'text',
       userCanEdit: false,
@@ -46,7 +48,8 @@ module.exports = {
     {
       key: 'clientSecret',
       name: 'Azure AD Registered App Client Secret',
-      description: 'TODO add instructions of where to get',
+      description:
+        "Your Azure AD Registered App's Client Secret associated with your Microsoft Sentinel Instance.",
       default: '',
       type: 'password',
       userCanEdit: false,
@@ -54,8 +57,9 @@ module.exports = {
     },
     {
       key: 'subscriptionIds',
-      name: 'Sentinel Subscription IDs',
-      description: 'TODO add instructions of where to get',
+      name: 'Sentinel Subscription ID',
+      description:
+        'The Subscription ID associated with your Microsoft Sentinel Instance.',
       default: '',
       type: 'text',
       userCanEdit: false,
@@ -63,8 +67,9 @@ module.exports = {
     },
     {
       key: 'resourceGroupNames',
-      name: 'Sentinel Resource Group Names',
-      description: 'TODO add instructions of where to get',
+      name: 'Sentinel Resource Group Name',
+      description:
+        'The Resource Group Name associated with your Microsoft Sentinel Instance.',
       default: '',
       type: 'text',
       userCanEdit: false,
@@ -72,8 +77,10 @@ module.exports = {
     },
     {
       key: 'workspaceNamesAndIds',
-      name: 'Sentinel Workspace Names & IDs',
-      description: 'TODO add instructions of where to get name: id, ',
+      name: 'Sentinel Workspace Name & ID',
+      description:
+        'The {{WORKSPACE_NAME}}:{{WORKSPACE_ID}} for the workspace associated with your Microsoft Sentinel Instance.\n' +
+        '(e.g. sentinel-workspace1: 8dbg2cdf-fd06-42zf-8557-4606c98adb2a)',
       default: '',
       type: 'text',
       userCanEdit: false,
@@ -112,7 +119,7 @@ module.exports = {
     {
       key: 'lookbackDays',
       name: 'Lookback Days',
-      description: 'TODO',
+      description: 'The number of days to look back when querying logs, and incidents.',
       default: 30,
       type: 'number',
       userCanEdit: true,

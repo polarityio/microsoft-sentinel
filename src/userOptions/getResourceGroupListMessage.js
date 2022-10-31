@@ -16,7 +16,7 @@ const getResourceGroupListMessage = async (options) => {
   if (size(options.resourceGroupNames)) return [];
 
   const subscriptionIds = flow(get('subscriptionIds'), split(','), map(trim))(options);
-  const { Logger } = require('../../integration.js');
+  
   const resourceGroupNamesMessages = await Promise.all(
     map(getResourceGroupNameMessage(options), subscriptionIds)
   );

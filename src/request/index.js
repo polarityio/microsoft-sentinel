@@ -10,10 +10,11 @@ const requestsInParallel = async (
   limit = 10
 ) => {
   const unexecutedRequestFunctions = map(
-    ({entity, ...requestOptions}) => async () => {
-      const result = get(responseGetPath, await requestWithDefaults(requestOptions));
-      return entity ? { entity, result } : result;
-    },
+    ({ entity, ...requestOptions }) =>
+      async () => {
+        const result = get(responseGetPath, await requestWithDefaults(requestOptions));
+        return entity ? { entity, result } : result;
+      },
     requestsOptions
   );
 

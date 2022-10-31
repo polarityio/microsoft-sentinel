@@ -583,9 +583,7 @@
         {{/if}}
       </div>
       {{#if details.domainWhois.parsedWhois.contacts}}
-        {{#each-in details.domainWhois.parsedWhois.contacts
-          as |contactType contactInfo|
-        }}
+        {{#each-in details.domainWhois.parsedWhois.contacts as |contactType contactInfo|}}
           <h1 class="p-title">
             {{fa-icon icon="user" class="large-icon"}}
             {{get whoisDisplayNames contactType}}
@@ -654,7 +652,9 @@
           class="expandable-title"
           {{on "click" (action "toggleExpandableTitle" index "kustoQueryResults")}}
         >
-          <span class="text">Table {{inc index}}: <em>{{titleize (humanize (dasherize kustoQueryResult.tableName))}}</em></span>
+          <span class="text">Table
+            {{inc index}}:
+            <em>{{titleize (humanize (dasherize kustoQueryResult.tableName))}}</em></span>
           {{fa-icon icon="angle-up"}}
         </a>
         <div class="table-content">
@@ -679,7 +679,7 @@
                 </span>
               </div>
             {{else if (eq displayField.type "endOfRow")}}
-              <hr>
+              <hr />
             {{/if}}
           {{/each}}
         </div>
@@ -689,7 +689,9 @@
           class="expandable-title"
           {{on "click" (action "toggleExpandableTitle" index "kustoQueryResults")}}
         >
-          <span class="text">Table {{inc index}}: <em>{{titleize (humanize (dasherize kustoQueryResult.tableName))}}</em></span>
+          <span class="text">Table
+            {{inc index}}:
+            <em>{{titleize (humanize (dasherize kustoQueryResult.tableName))}}</em></span>
           {{fa-icon icon="angle-down"}}
         </a>
       {{/if}}

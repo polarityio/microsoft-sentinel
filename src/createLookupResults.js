@@ -1,4 +1,3 @@
-const { uniq } = require('lodash');
 const {
   flow,
   get,
@@ -13,7 +12,8 @@ const {
   keys,
   filter,
   __,
-  compact
+  compact,
+  uniq
 } = require('lodash/fp');
 const reduce = require('lodash/fp/reduce').convert({ cap: false });
 
@@ -144,7 +144,28 @@ const createSummaryTags = (
     size
   )(kustoQueryResults);
 
-  const customKustoTagsFromOptions = flow(
+  const customKustoTagsFromOptions = buildCustomKustoTagsFromOptions(
+    kustoQueryResults,
+    options
+  );
+
+  const kustoQueryResultsTags = (
+    totalKustoQueryResultsRows ? [`Logs: ${totalKustoQueryResultsRows}`] : []
+  ).concat(size(customKustoTagsFromOptions) ? customKustoTagsFromOptions : []);
+
+  const ipGeodataTags = flow(keys, size)(ipGeodata) ? [`Geodata`] : [];
+  const domainWhoisTags = flow(keys, size)(domainWhois) ? [`WHOIS`] : [];
+
+  return []
+    .concat(indicatorsTags)
+    .concat(incidentsTags)
+    .concat(kustoQueryResultsTags)
+    .concat(ipGeodataTags)
+    .concat(domainWhoisTags);
+};
+
+const buildCustomKustoTagsFromOptions = (kustoQueryResults, options) =>
+  flow(
     flatMap(
       flow(
         get('tableFields'),
@@ -161,21 +182,4 @@ const createSummaryTags = (
     uniq
   )(kustoQueryResults);
 
-  const kustoQueryResultsTags = (
-    totalKustoQueryResultsRows ? [`Logs: ${totalKustoQueryResultsRows}`] : []
-  ).concat(size(customKustoTagsFromOptions) ? customKustoTagsFromOptions : []);
-
-  //TODO add ignore geo and whois here
-  const ipGeodataTags = flow(keys, size)(ipGeodata) ? [`Geodata`] : [];
-  const domainWhoisTags = flow(keys, size)(domainWhois) ? [`WHOIS`] : [];
-
-  return []
-    .concat(indicatorsTags)
-    .concat(incidentsTags)
-    .concat(kustoQueryResultsTags)
-    .concat(ipGeodataTags)
-    .concat(domainWhoisTags);
-};
-
-const asdf = (options) => {}
 module.exports = createLookupResults;

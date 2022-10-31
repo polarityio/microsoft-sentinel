@@ -30,7 +30,6 @@ const validateOptions = async (options, callback) => {
       ])
     : [[], []];
 
-  //TODO: validate the workspaceNamesAndIds user option to ensure each comma separated section has a ":"
   const errors = stringValidationErrors
     .concat(subscriptionsListMessage)
     .concat(resourceGroupListMessage)

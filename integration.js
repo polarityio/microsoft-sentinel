@@ -12,6 +12,7 @@ let logger;
 const startup = (_logger) => {
   logger = _logger
 };
+
 const Logger = (...args) => {
   const lastArg = last(args);
   const lastArgIsLevel = ['trace', 'debug', 'info', 'warn', 'error', 'fatal'].includes(
@@ -35,12 +36,12 @@ const doLookup = async (entities, options, cb) => {
       ignoredIpLookupResults
     );
 
-    Logger({ lookupResults }, 'Lookup Results', 'trace');
+    Logger({ lookupResults }, 'Lookup Results', 'trace');    
     cb(null, lookupResults);
   } catch (error) {
     const err = parseErrorToReadableJSON(error);
-    Logger({ error, formattedError: err }, 'Get Lookup Results Failed', 'error');
 
+    Logger({ error, formattedError: err }, 'Get Lookup Results Failed', 'error');
     cb({ detail: error.message || 'Lookup Failed', err });
   }
 };
