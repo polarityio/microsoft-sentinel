@@ -1,7 +1,8 @@
 module.exports = {
   name: 'Microsoft Sentinel',
   acronym: 'MS-SNTL',
-  description: 'Search for WHOIS, Geolocation Data, Incidents, Threat Intelligence Indicators, and Query Logs via Kusto Queries',
+  description:
+    'Search for WHOIS, Geolocation Data, Incidents, Threat Intelligence Indicators, and Query Logs via Kusto Queries',
   entityTypes: ['domain', 'IPv4', 'email', 'hash', 'MAC'],
   styles: ['./styles/styles.less'],
   defaultColor: 'light-blue',
@@ -124,7 +125,16 @@ module.exports = {
       type: 'number',
       userCanEdit: true,
       adminOnly: false
+    },
+    {
+      key: 'ignoreWhenGeodataWhoisOnlyReturn',
+      name: 'Ignore Geodata/WHOIS Only Results',
+      description:
+        'If checked, entities will not return if only Geodata and/or WHOIS data is found, and no other query types have results.',
+      default: false,
+      type: 'boolean',
+      userCanEdit: false,
+      adminOnly: true
     }
-    // Could add checkbox option ignoring results that only have Geodata or WHOIS data to filter out less relevant results
   ]
 };

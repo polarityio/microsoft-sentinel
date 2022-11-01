@@ -13,7 +13,8 @@ const {
   filter,
   __,
   compact,
-  uniq
+  uniq,
+  omit
 } = require('lodash/fp');
 const reduce = require('lodash/fp/reduce').convert({ cap: false });
 
@@ -37,9 +38,18 @@ const createLookupResults = (
       kustoQueryResults
     );
 
+    const resultsFound = flow(
+      (results) =>
+        options.ignoreWhenGeodataWhoisOnlyReturn
+          ? omit(['domainWhois', 'ipGeodata'], results)
+          : results,
+      values,
+      some(flow(keys, size))
+    )(resultsForThisEntity);
+
     const lookupResult = {
       entity,
-      data: flow(values, some(flow(keys, size)))(resultsForThisEntity)
+      data: resultsFound
         ? {
             summary: createSummaryTags(resultsForThisEntity, options),
             details: resultsForThisEntity

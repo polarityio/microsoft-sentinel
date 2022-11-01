@@ -46,6 +46,9 @@ This option must be set to "User can view and edit" or "User can view only".
 ### Lookback Days
 The number of days to look back when querying logs, and incidents.
 
+### Ignore Geodata/WHOIS Only Results
+If checked, entities will not return if only Geodata and/or WHOIS data is found, and no other query types have results.
+
 ## Installation Instructions
 
 Installation instructions for integrations are provided on the [PolarityIO GitHub Page](https://polarityio.github.io/).
