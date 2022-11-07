@@ -3,8 +3,14 @@
 ![image](https://img.shields.io/badge/status-beta-green.svg)
 
 Microsoft Sentinel puts the cloud and large-scale intelligence from decades of Microsoft security experience to work. 
+
 The Polarity Microsoft Sentinel Integration allows users to search for WHOIS, Geolocation 
 Data, Incidents, Threat Intelligence Indicators, and Query Logs via Kusto Queries for Domains, IP Addresses, and Hashes.
+
+
+<div style="display:flex; justify-content:center; align-items: flex-start;">
+  <img width="300" alt="Integration Example Search" src="./assets/integration-example.png">
+</div>
 
 To learn more about Microsoft Sentinel, visit the [official website](__TODO__).
 
