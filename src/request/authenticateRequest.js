@@ -1,85 +1,77 @@
-const { get, getOr, includes, identity, stubFalse, eq, flow, negate } = require('lodash/fp');
+const { ConfidentialClientApplication } = require('@azure/msal-node');
+const { get, flow, pick, join, concat, values } = require('lodash/fp');
+const { mapObject } = require('../dataTransformations');
 
-const { getSetCookies, or, decodeBase64 } = require('../../src/dataTransformations');
-const { getStateValueByPath, setStateValueForPath } = require('../localStateManager');
-const handleRequestErrorsForServices = require('./handleRequestErrorsForServices');
+const NodeCache = require('node-cache');
+const clientCache = new NodeCache();
+const tokenCache = new NodeCache({
+  stdTTL: 30 * 60
+});
 
-const authenticateRequest =
-  (requestWithDefaultsBuilder) =>
-  async ({ site, ...requestOptions }) =>
-    await getOr(identity,site, authenticationProcessBySite)(
-      requestOptions,
-      requestWithDefaultsBuilder
-    );
+const authenticateRequest = async ({ site, route, options, ...requestOptions }) => {
+  const accessToken = await getToken(site, options);
 
-const authenticateForPolarityRequest = async (
-  { route, slackUserId, ...requestOptions },
-  requestWithDefaultsBuilder
-) => {
-  const requestWithDefaults = requestWithDefaultsBuilder(
-    stubFalse,
-    identity,
-    handleRequestErrorsForServices(requestWithDefaultsBuilder)
-  );
-
-  const polarityUrl = getStateValueByPath('config.polarityUrl');
-
-  const polarityCredentialsPath = `${slackUserId}.slackAppHomeState.userPolarityCredentials`;
-  let { polarityCookie, polarityUsername, polarityPassword } =
-    getStateValueByPath(polarityCredentialsPath) || {};
-
-  let credentialsAreIncorrect;
-  if (!polarityCookie) {
-    const authenticationResponse = await requestWithDefaults({
-      method: 'POST',
-      site: 'polarity',
-      url: `${polarityUrl}/v2/authenticate`,
-      headers: { 'Content-Type': 'application/json' },
-      body: {
-        identification: polarityUsername,
-        password: decodeBase64(polarityPassword)
-      }
-    });
-
-    credentialsAreIncorrect = flow(
-      get('statusCode'),
-      or(eq(401), eq(422), negate(identity))
-    )(authenticationResponse);
-
-    polarityCookie = getSetCookies(get('headers', authenticationResponse));
-    if (!credentialsAreIncorrect && polarityCookie) {
-      setStateValueForPath(`${polarityCredentialsPath}.polarityCookie`, polarityCookie);
-      setStateValueForPath(`${polarityCredentialsPath}.polarityUsername`, '');
-      setStateValueForPath(`${polarityCredentialsPath}.polarityPassword`, '');
-    } else {
-      setStateValueForPath(`${polarityCredentialsPath}.polarityCookie`, '');
-    }
-  }
-  
   return {
     ...requestOptions,
-    url: `${polarityUrl}/${route}`,
+    url: urlBySite[site] + route,
     headers: {
       ...requestOptions.headers,
-      Cookie: polarityCookie
+      Authorization: `Bearer ${accessToken}`
     }
   };
 };
 
-const authenticateForSlackRequest = ({ route, ...requestOptions }) => ({
-  url: `https://slack.com/api/${route}`,
-  ...requestOptions,
-  headers: {
-    ...requestOptions.headers,
-    Authorization: `Bearer ${getStateValueByPath(
-      `config.${includes('manifest.update', route) ? 'appToken' : 'slackBotToken'}`
-    )}`
-  }
-});
+const getToken = async (site, options) => {
+  const clientCacheId = flow(
+    pick(['clientId', 'tenantId', 'clientSecret']),
+    values,
+    join(''),
+    concat(site),
+    join('')
+  )(options);
 
-const authenticationProcessBySite = {
-  polarity: authenticateForPolarityRequest,
-  slack: authenticateForSlackRequest
+  const client = await getClient(clientCacheId, options);
+
+  const accessToken = await getAccessToken(clientCacheId, client, site);
+
+  return accessToken;
 };
+
+const getClient = async (clientCacheId, options) => {
+  let client = clientCache.get(clientCacheId);
+  if (!client) {
+    const config = {
+      auth: {
+        clientId: options.clientId,
+        authority: urlBySite.login + options.tenantId,
+        clientSecret: options.clientSecret
+      }
+    };
+    client = new ConfidentialClientApplication(config);
+    clientCache.set(clientCacheId, client);
+  }
+  return client;
+};
+
+const getAccessToken = async (clientCacheId, client, site) => {
+  let accessToken = tokenCache.get(clientCacheId);
+  if (!accessToken) {
+    accessToken = get(
+      'accessToken',
+      await client.acquireTokenByClientCredential({ scopes: [scopesBySite[site]] })
+    );
+
+    tokenCache.set(clientCacheId, accessToken);
+  }
+  return accessToken;
+};
+
+const urlBySite = {
+  logs: 'https://api.loganalytics.io/',
+  management: 'https://management.azure.com/',
+  login: 'https://login.microsoftonline.com/'
+};
+
+const scopesBySite = mapObject((value, key) => [key, `${value}.default`], urlBySite);
 
 module.exports = authenticateRequest;

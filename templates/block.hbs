@@ -1,166 +1,700 @@
-<div class='slack-integration'>
-  {{#if (and availableChannelsToMessage.length block.userOptions.allowSendingMessages) }}
-    <div class='messaging'>
-      <div class='channel-select-container'>
-        <div class='channel-select-title'>
-          {{#if selectedChannel.is_private}}
-            {{fa-icon 'lock' class='icon channel-icon' size='md' fixedWidth=true}}
-          {{else}}
-            {{fa-icon 'hashtag' class='icon channel-icon' size='md' fixedWidth=true}}
-          {{/if}}
-          <select
-            class='channel-dropdown'
-            onchange={{action 'selectChannel' value='target.value'}}
-          >
-            {{#each availableChannelsToMessage as |channel|}}
-              <option
-                class='channel-option'
-                value={{channel.id}}
-                selected={{eq channel.id selectedChannel.id}}
-              >{{channel.name}}</option>
-            {{/each}}
-          </select>
-        </div>
-      </div>
-      {{textarea
-        class='message-box'
-        change=(action (mut messageValue) value='target.value')
-        rows=2
-        placeholder=(concat 'Message ' selectedChannel.name)
-        value=messageValue
-        disabled=sendingMessage
-      }}
-      <div class='send-button-and-messages'>
-        <button
-          {{action 'sendMessage'}}
-          class='p-btn btn btn-light send-button
-            {{if (or sendingMessage (not messageValue)) "disabled"}}'
-          disabled={{or sendingMessage (not messageValue)}}
-        >
-          {{#if sendingMessage}}
-            {{fa-icon
-              'spinner-third'
-              class='icon loading-icon'
-              size='md'
-              fixedWidth=true
-              spin=true
-              alt='Send Message'
-            }}
-          {{/if}}
-          {{fa-icon 'paper-plane' class='icon send-icon' size='md' fixedWidth=true}}
-        </button>
-        {{#if messagingToast}}
-          <div class='alert alert-info'>
-            {{messagingToast}}
-          </div>
-        {{/if}}
-        {{#if errorMessagingToast}}
-          <div class='alert alert-danger'>
-            {{errorMessagingToast}}
-          </div>
-        {{/if}}
-      </div>
-    </div>
+<ul class="nav nav-tabs">
+  {{#if (get details "indicators" "length")}}
+    <li class="nav-item">
+      <a
+        {{action "changeTab" "indicators"}}
+        class="nav-link {{if (eq activeTab "indicators") "active"}}"
+        href="#"
+      >
+        {{get displayTabNames "indicators"}}
+      </a>
+    </li>
   {{/if}}
+  {{#if (get details "incidents" "length")}}
+    <li class="nav-item">
+      <a
+        {{action "changeTab" "incidents"}}
+        class="nav-link {{if (eq activeTab "incidents") "active"}}"
+        href="#"
+      >
+        {{get displayTabNames "incidents"}}
+      </a>
+    </li>
+  {{/if}}
+  {{#if (get details "ipGeodata" "length")}}
+    <li class="nav-item">
+      <a
+        {{action "changeTab" "ipGeodata"}}
+        class="nav-link {{if (eq activeTab "ipGeodata") "active"}}"
+        href="#"
+      >
+        {{get displayTabNames "ipGeodata"}}
+      </a>
+    </li>
+  {{/if}}
+  {{#if (get details "domainWhois" "length")}}
+    <li class="nav-item">
+      <a
+        {{action "changeTab" "domainWhois"}}
+        class="nav-link {{if (eq activeTab "domainWhois") "active"}}"
+        href="#"
+      >
+        {{get displayTabNames "domainWhois"}}
+      </a>
+    </li>
+  {{/if}}
+  {{#if (get details "kustoQueryResults" "length")}}
+    <li class="nav-item">
+      <a
+        {{action "changeTab" "kustoQueryResults"}}
+        class="nav-link {{if (eq activeTab "kustoQueryResults") "active"}}"
+        href="#"
+      >
+        {{get displayTabNames "kustoQueryResults"}}
+      </a>
+    </li>
+  {{/if}}
+</ul>
 
-  {{#if details.foundMessagesFromSearch.length}}
-    <div class='search-results'>
-      {{#if foundMessageSearchResultsOpen}}
-        <div class='expandable-title-container open'>
-          <a
-            href='#'
-            class='expandable-title'
-            {{on 'click' (action 'toggleShowingFoundMessages')}}
-          >
-            <span class='text'>Search results for "{{block.entity.value}}</span>"
-            {{fa-icon 'angle-up' class='icon search-result-chevron'}}
-          </a>
-        </div>
-        <div class='search-results-content'>
-          {{#each details.foundMessagesFromSearch as |foundMessage index|}}
-            <div class='search-result'>
-              <a href='{{foundMessage.messageLink}}'>
-                <div class='channel-and-date'>
-                  <span class='channel-name'>
-                    {{#if message.channelIsPrivate}}
-                      {{fa-icon 'lock' class='icon channel-icon'}}
-                    {{else}}
-                      {{fa-icon 'hashtag' class='icon channel-icon'}}
-                    {{/if}}
-                    {{foundMessage.channelName}}
-                  </span>
-                  <span class='date'>
-                    &nbsp;- &nbsp;{{moment-format
-                      foundMessage.datetime
-                      'MMM DD, YYYY'
-                      timeZone=timezone
-                    }}</span>
-                  <span class='view-in-channel'>View&nbsp;in&nbsp;channel</span>
-                </div>
-                <div class='message-and-picture'>
-                  {{#if foundMessage.profilePictureSrc}}
-                    <img
-                      class='profile-picture'
-                      src='{{foundMessage.profilePictureSrc}}'
-                    />
-                  {{/if}}
-                  <div class='message'>
-                    <div class='sender-and-time'>
-                      <span class='sender'>{{titleize foundMessage.username}}</span>
-                      <span class='time'>{{moment-format
-                          foundMessage.datetime
-                          'hh:mm A'
-                          timeZone=timezone
-                        }}</span>
-                    </div>
-                    <div class='message-content'>
-                      {{foundMessage.displayMessage}}
-                      {{#if foundMessage.shouldShowMoreMessage}}
-                        <div class='show-more'><a
-                            href='#'
-                            {{on 'click' (action 'showMoreOfMessage' index)}}
-                          >... Show More</a></div>
-                      {{/if}}
-                    </div>
-                  </div>
-                </div>
-              </a>
+{{#if (eq activeTab "indicators")}}
+  <br />
+  {{#each details.indicators as |indicator index|}}
+    <div>
+      {{#if (get (get expandableTitleStates "indicators") index)}}
+        <a
+          href="#"
+          class="expandable-title"
+          {{on "click" (action "toggleExpandableTitle" index "indicators")}}
+        >
+          <span class="text">{{indicator.properties.pattern}}</span>
+          {{fa-icon icon="angle-up"}}
+        </a>
+        <div class="indicator-content">
+          {{#if indicator.properties.parsedPattern.length}}
+            <div>
+              <span class="p-key">Values: </span>
+              <span class="p-value">
+                {{#each indicator.properties.parsedPattern as |parsedPattern|}}
+                  {{#each parsedPattern.patternTypeValues as |pattern|}}
+                    {{pattern.valueType}}
+                    :
+                    {{pattern.value}},
+                  {{/each}}
+                {{/each}}
+              </span>
             </div>
-          {{/each}}
-          {{#if
-            (lt details.currentSearchResultsPage details.totalNumberOfSearchResultPages)
-          }}
-            <div class='load-more {{if loadingMoreMessages "loading-more"}}'><a
-                href='#'
-                {{on 'click' (action 'loadMoreSearchMessages')}}
-              >
-                {{#if loadingMoreMessages}}
-                  {{fa-icon
-                    'spinner-third'
-                    class='icon loading-icon'
-                    size='lg'
-                    fixedWidth=true
-                    spin=true
-                    alt='Getting More Messages'
-                  }}
-                {{else}}
-                  ... Load More
-                {{/if}}
-              </a></div>
           {{/if}}
+          {{#if indicator.properties.displayName}}
+            <div>
+              <span class="p-key">Name: </span>
+              <span class="p-value">{{indicator.properties.displayName}}</span>
+            </div>
+          {{/if}}
+          {{#if indicator.properties.description}}
+            <div>
+              <span class="p-key">Description: </span>
+              <span class="p-value">{{indicator.properties.description}}</span>
+            </div>
+          {{/if}}
+          {{#if indicator.properties.threatTypes}}
+            <div>
+              <span class="p-key">Threat types: </span>
+              <span class="p-value">{{join ", " indicator.properties.threatTypes}}</span>
+            </div>
+          {{/if}}
+          {{#if indicator.properties.confidence}}
+            <div>
+              <span class="p-key">Confidence: </span>
+              <span class="p-value">{{indicator.properties.confidence}}</span>
+            </div>
+          {{/if}}
+          {{#if indicator.properties.source}}
+            <div>
+              <span class="p-key">Source: </span>
+              <span class="p-value">{{indicator.properties.source}}</span>
+            </div>
+          {{/if}}
+          {{#if indicator.properties.createdByRef}}
+            <div>
+              <span class="p-key">Created by: </span>
+              <span class="p-value">{{indicator.properties.createdByRef}}</span>
+            </div>
+          {{/if}}
+          {{#if indicator.properties.pattern}}
+            <div>
+              <span class="p-key">Pattern: </span>
+              <span class="p-value">{{indicator.properties.pattern}}</span>
+            </div>
+          {{/if}}
+          {{#if indicator.properties.revoked}}
+            <div>
+              <span class="p-key">Revoked: </span>
+              <span class="p-value">{{indicator.properties.revoked}}</span>
+            </div>
+          {{/if}}
+          {{#if indicator.properties.created}}
+            <div>
+              <span class="p-key">Created: </span>
+              <span class="p-value">{{moment-format
+                  indicator.properties.created
+                  "MM/DD/YYYY HH:mm:ss"
+                  timeZone=timezone
+                }}</span>
+            </div>
+          {{/if}}
+          {{#if indicator.properties.validFrom}}
+            <div>
+              <span class="p-key">Valid from: </span>
+              <span class="p-value">{{moment-format
+                  indicator.properties.validFrom
+                  "MM/DD/YYYY HH:mm:ss"
+                  timeZone=timezone
+                }}</span>
+            </div>
+          {{/if}}
+          {{#if indicator.properties.validUntil}}
+            <div>
+              <span class="p-key">Valid until: </span>
+              <span class="p-value">{{moment-format
+                  indicator.properties.validUntil
+                  "MM/DD/YYYY HH:mm:ss"
+                  timeZone=timezone
+                }}</span>
+            </div>
+          {{/if}}
+          {{#if indicator.properties.modified}}
+            <div>
+              <span class="p-key">Modified: </span>
+              <span class="p-value">{{moment-format
+                  indicator.properties.modified
+                  "MM/DD/YYYY HH:mm:ss"
+                  timeZone=timezone
+                }}</span>
+            </div>
+          {{/if}}
+          <div class="tag-container">
+            <h1 class="p-title">
+              {{fa-icon icon="tags" fixedWidth=true}}
+              Tags
+            </h1>
+            {{#if (eq indicator.properties.threatIntelligenceTags.length 0)}}
+              <span class="p-footnote mb-2 mt-2">
+                <span><em>&nbsp; No Threat Intel Tags Found &nbsp;</em></span>
+              </span>
+            {{else}}
+              {{#each
+                (take 20 indicator.properties.threatIntelligenceTags)
+                as |threatIntelligenceTag|
+              }}
+                <span class="tag link-tag d-inline-flex align-items-center">
+                  <span class="text-container summary-source">
+                    {{threatIntelligenceTag}}
+                  </span>
+                </span>
+              {{/each}}
+            {{/if}}
+          </div>
         </div>
       {{else}}
-        <div class='expandable-title-container closed'>
-          <a
-            href='#'
-            class='expandable-title'
-            {{on 'click' (action 'toggleShowingFoundMessages')}}
-          >
-            <span class='text'>Search results for "{{block.entity.value}}</span>"
-            {{fa-icon 'angle-down' class='icon search-result-chevron'}}
-          </a>
-        </div>
+        <a
+          href="#"
+          class="expandable-title"
+          {{on "click" (action "toggleExpandableTitle" index "indicators")}}
+        >
+          <span class="text">{{indicator.properties.pattern}}</span>
+          {{fa-icon icon="angle-down"}}
+        </a>
       {{/if}}
     </div>
-  {{/if}}
-</div>
+  {{/each}}
+{{/if}}
+
+{{#if (eq activeTab "incidents")}}
+  <br />
+  {{#each details.incidents as |incident index|}}
+    <div>
+      {{#if (get (get expandableTitleStates "incidents") index)}}
+        <a
+          href="#"
+          class="expandable-title"
+          {{on "click" (action "toggleExpandableTitle" index "incidents")}}
+        >
+          <span class="text">{{incident.properties.title}}
+            (ID:
+            {{incident.properties.incidentNumber}})</span>
+          {{fa-icon icon="angle-up"}}
+        </a>
+        <div class="incident-content">
+          {{#if incident.properties.incidentUrl}}
+            <div class="p-title">
+              <a class="p-link" href={{incident.properties.incidentUrl}}>
+                View Incident in Sentinel
+                {{fa-icon icon="external-link-square" class="external-link-icon"}}
+              </a>
+            </div>
+          {{/if}}
+          {{#if incident.properties.description}}
+            <div>
+              <span class="p-key">Description: </span>
+              <pre class="p-value">{{incident.properties.description}}</pre>
+            </div>
+          {{/if}}
+          {{#if incident.properties.incidentNumber}}
+            <div>
+              <span class="p-key">Incident ID: </span>
+              <span class="p-value">{{incident.properties.incidentNumber}}</span>
+            </div>
+          {{/if}}
+          {{#if incident.properties.status}}
+            <div>
+              <span class="p-key">Status: </span>
+              <span class="p-value">{{incident.properties.status}}</span>
+            </div>
+          {{/if}}
+          {{#if incident.properties.severity}}
+            <div>
+              <span class="p-key">Severity: </span>
+              <span class="p-value">{{incident.properties.severity}}</span>
+            </div>
+          {{/if}}
+          {{#if incident.properties.owner.assignedTo}}
+            <div>
+              <span class="p-key">Owner: </span>
+              <span class="p-value">{{incident.properties.owner.assignedTo}}</span>
+            </div>
+          {{/if}}
+          {{#if
+            (or
+              incident.properties.additionalData.alertCount
+              (eq incident.properties.additionalData.alertCount 0)
+            )
+          }}
+            <div>
+              <span class="p-key"># of Alerts: </span>
+              <span
+                class="p-value"
+              >{{incident.properties.additionalData.alertCount}}</span>
+            </div>
+          {{/if}}
+          {{#if
+            (or
+              incident.properties.additionalData.bookmarksCount
+              (eq incident.properties.additionalData.bookmarksCount 0)
+            )
+          }}
+            <div>
+              <span class="p-key"># of Bookmarks: </span>
+              <span
+                class="p-value"
+              >{{incident.properties.additionalData.bookmarksCount}}</span>
+            </div>
+          {{/if}}
+          {{#if
+            (or
+              incident.properties.additionalData.commentsCount
+              (eq incident.properties.additionalData.commentsCount 0)
+            )
+          }}
+            <div>
+              <span class="p-key"># of Comments: </span>
+              <span
+                class="p-value"
+              >{{incident.properties.additionalData.commentsCount}}</span>
+            </div>
+          {{/if}}
+          {{#if incident.properties.lastActivityTimeUtc}}
+            <div>
+              <span class="p-key">Last Update Time: </span>
+              <span class="p-value">{{moment-format
+                  incident.properties.lastActivityTimeUtc
+                  "MM/DD/YYYY HH:mm:ss"
+                  timeZone=timezone
+                }}</span>
+            </div>
+          {{/if}}
+          {{#if incident.properties.createdTimeUtc}}
+            <div>
+              <span class="p-key">Creation Time: </span>
+              <span class="p-value">{{moment-format
+                  incident.properties.createdTimeUtc
+                  "MM/DD/YYYY HH:mm:ss"
+                  timeZone=timezone
+                }}</span>
+            </div>
+          {{/if}}
+          <div class="tag-container">
+            <h1 class="p-title">
+              {{fa-icon icon="tags" fixedWidth=true}}
+              Tags
+            </h1>
+            {{#if (eq incident.properties.labels.length 0)}}
+              <span class="p-footnote mb-2 mt-2">
+                <span><em>&nbsp; No Incident Tags Found &nbsp;</em></span>
+              </span>
+            {{else}}
+              {{#each (take 20 incident.properties.labels) as |label|}}
+                <span class="tag link-tag d-inline-flex align-items-center">
+                  <span class="text-container summary-source">
+                    {{label.labelName}}
+                  </span>
+                </span>
+              {{/each}}
+            {{/if}}
+          </div>
+        </div>
+      {{else}}
+        <a
+          href="#"
+          class="expandable-title"
+          {{on "click" (action "toggleExpandableTitle" index "incidents")}}
+        >
+          <span class="text">{{incident.properties.title}}
+            (ID:
+            {{incident.properties.incidentNumber}})</span>
+          {{fa-icon icon="angle-down"}}
+        </a>
+      {{/if}}
+    </div>
+  {{/each}}
+{{/if}}
+
+{{#if (eq activeTab "ipGeodata")}}
+  <div>
+    <h1 class="p-title">
+      {{fa-icon icon="location" class="large-icon"}}
+      {{details.ipGeodata.ipAddr}}
+    </h1>
+    {{#if details.ipGeodata.asn}}
+      <div>
+        <span class="p-key">ASN: </span>
+        <span class="p-value">{{details.ipGeodata.asn}}</span>
+      </div>
+    {{/if}}
+    {{#if details.ipGeodata.ipRoutingType}}
+      <div>
+        <span class="p-key">IP Routing Type: </span>
+        <span class="p-value">{{details.ipGeodata.ipRoutingType}}</span>
+      </div>
+    {{/if}}
+    {{#if details.ipGeodata.organization}}
+      <div>
+        <span class="p-key">Organization: </span>
+        <span class="p-value">{{details.ipGeodata.organization}}</span>
+      </div>
+    {{/if}}
+    {{#if details.ipGeodata.organizationType}}
+      <div>
+        <span class="p-key">Organization Type: </span>
+        <span class="p-value">{{details.ipGeodata.organizationType}}</span>
+      </div>
+    {{/if}}
+    {{#if details.ipGeodata.carrier}}
+      <div>
+        <span class="p-key">Carrier: </span>
+        <span class="p-value">{{titleize details.ipGeodata.carrier}}</span>
+      </div>
+    {{/if}}
+    {{#if details.ipGeodata.city}}
+      <div>
+        <span class="p-key">City: </span>
+        <span class="p-value">{{capitalize details.ipGeodata.city}}</span>
+      </div>
+    {{/if}}
+    {{#if details.ipGeodata.state}}
+      <div>
+        <span class="p-key">State: </span>
+        <span class="p-value">{{capitalize details.ipGeodata.state}}</span>
+      </div>
+    {{/if}}
+    {{#if details.ipGeodata.country}}
+      <div>
+        <span class="p-key">Country: </span>
+        <span class="p-value">{{capitalize details.ipGeodata.country}}</span>
+      </div>
+    {{/if}}
+    {{#if details.ipGeodata.region}}
+      <div>
+        <span class="p-key">Region: </span>
+        <span class="p-value">{{details.ipGeodata.region}}</span>
+      </div>
+    {{/if}}
+    {{#if details.ipGeodata.continent}}
+      <div>
+        <span class="p-key">Continent: </span>
+        <span class="p-value">{{capitalize details.ipGeodata.continent}}</span>
+      </div>
+    {{/if}}
+    {{#if details.ipGeodata.latitude}}
+      <div>
+        <span class="p-key">Latitude: </span>
+        <span class="p-value">{{details.ipGeodata.latitude}}</span>
+      </div>
+    {{/if}}
+    {{#if details.ipGeodata.longitude}}
+      <div>
+        <span class="p-key">Longitude: </span>
+        <span class="p-value">{{details.ipGeodata.longitude}}</span>
+      </div>
+    {{/if}}
+  </div>
+{{/if}}
+
+{{#if (eq activeTab "domainWhois")}}
+  <div>
+    <h1 class="p-title">
+      {{fa-icon icon="question" class="large-icon"}}
+      {{details.domainWhois.domain}}
+    </h1>
+    {{#if details.domainWhois.server}}
+      <div>
+        <span class="p-key">Server: </span>
+        <span class="p-value">{{details.domainWhois.server}}</span>
+      </div>
+    {{/if}}
+    {{#if details.domainWhois.created}}
+      <div>
+        <span class="p-key">Created: </span>
+        <span class="p-value">
+          {{moment-format
+            details.domainWhois.created
+            "MM/DD/YYYY HH:mm:ss"
+            timeZone=timezone
+          }}
+        </span>
+      </div>
+    {{/if}}
+    {{#if details.domainWhois.updated}}
+      <div>
+        <span class="p-key">Updated: </span>
+        <span class="p-value">
+          {{moment-format
+            details.domainWhois.updated
+            "MM/DD/YYYY HH:mm:ss"
+            timeZone=timezone
+          }}
+        </span>
+      </div>
+    {{/if}}
+    {{#if details.domainWhois.expires}}
+      <div>
+        <span class="p-key">Expires: </span>
+        <span class="p-value">
+          {{details.domainWhois.parsedWhois.registrar.name}}
+        </span>
+      </div>
+    {{/if}}
+    {{#if details.domainWhois.parsedWhois}}
+      {{#if details.domainWhois.parsedWhois.registrar}}
+        <h1 class="p-title">
+          {{fa-icon icon="user" class="large-icon"}}
+          Registrar
+        </h1>
+        {{#if details.domainWhois.parsedWhois.registrar.name}}
+          <div>
+            <span class="p-key">Name: </span>
+            <span class="p-value">
+              {{details.domainWhois.parsedWhois.registrar.name}}
+            </span>
+          </div>
+        {{/if}}
+        {{#if details.domainWhois.parsedWhois.registrar.abuseContactPhone}}
+          <div>
+            <span class="p-key">Abuse Contact Phone: </span>
+            <span class="p-value">
+              {{details.domainWhois.parsedWhois.registrar.abuseContactPhone}}
+            </span>
+          </div>
+        {{/if}}
+        {{#if details.domainWhois.parsedWhois.registrar.abuseContactEmail}}
+          <div>
+            <span class="p-key">Abuse Contact Email: </span>
+            <span class="p-value">
+              {{details.domainWhois.parsedWhois.registrar.abuseContactEmail}}
+            </span>
+          </div>
+        {{/if}}
+        {{#if details.domainWhois.parsedWhois.registrar.ianaId}}
+          <div>
+            <span class="p-key">IANA ID: </span>
+            <span class="p-value">
+              {{details.domainWhois.parsedWhois.registrar.ianaId}}
+            </span>
+          </div>
+        {{/if}}
+        {{#if details.domainWhois.parsedWhois.registrar.url}}
+          <div>
+            <span class="p-key">URL: </span>
+            <span class="p-value">
+              {{details.domainWhois.parsedWhois.registrar.url}}
+            </span>
+          </div>
+        {{/if}}
+        {{#if details.domainWhois.parsedWhois.registrar.whoisServer}}
+          <div>
+            <span class="p-key">WHOIS Server: </span>
+            <span class="p-value">
+              {{details.domainWhois.parsedWhois.registrar.whoisServer}}
+            </span>
+          </div>
+        {{/if}}
+      {{/if}}
+      <div class="tag-container">
+        <h1 class="p-title">
+          {{fa-icon icon="tags" fixedWidth=true}}
+          Name Servers
+        </h1>
+        {{#if (eq details.domainWhois.parsedWhois.nameServers.length 0)}}
+          <span class="p-footnote mb-2 mt-2">
+            <span><em>&nbsp; No Name Servers Found &nbsp;</em></span>
+          </span>
+        {{else}}
+          {{#each
+            (take 20 details.domainWhois.parsedWhois.nameServers)
+            as |nameServer nameServerIndex|
+          }}
+            <span class="tag link-tag d-inline-flex align-items-center">
+              <span class="text-container summary-source">
+                {{nameServer}}
+              </span>
+            </span>
+          {{/each}}
+        {{/if}}
+      </div>
+      <div class="tag-container">
+        <h1 class="p-title">
+          {{fa-icon icon="tags" fixedWidth=true}}
+          WHOIS Statuses
+        </h1>
+        {{#if (eq details.domainWhois.parsedWhois.statuses.length 0)}}
+          <span class="p-footnote mb-2 mt-2">
+            <span><em>&nbsp; No Statuses Found &nbsp;</em></span>
+          </span>
+        {{else}}
+          {{#each
+            (take 20 details.domainWhois.parsedWhois.statuses)
+            as |status statusIndex|
+          }}
+            <span class="tag link-tag d-inline-flex align-items-center">
+              <span class="text-container summary-source">
+                {{status}}
+              </span>
+            </span>
+          {{/each}}
+        {{/if}}
+      </div>
+      {{#if details.domainWhois.parsedWhois.contacts}}
+        {{#each-in details.domainWhois.parsedWhois.contacts as |contactType contactInfo|}}
+          <h1 class="p-title">
+            {{fa-icon icon="user" class="large-icon"}}
+            {{get whoisDisplayNames contactType}}
+          </h1>
+          {{#if contactInfo.name}}
+            <div>
+              <span class="p-key">Name: </span>
+              <span class="p-value">{{contactInfo.name}}</span>
+            </div>
+          {{/if}}
+          {{#if contactInfo.org}}
+            <div>
+              <span class="p-key">Organization: </span>
+              <span class="p-value">{{contactInfo.org}}</span>
+            </div>
+          {{/if}}
+          {{#if contactInfo.email}}
+            <div>
+              <span class="p-key">Email: </span>
+              <span class="p-value">{{contactInfo.email}}</span>
+            </div>
+          {{/if}}
+          {{#if contactInfo.phone}}
+            <div>
+              <span class="p-key">Phone Number: </span>
+              <span class="p-value">{{contactInfo.phone}}</span>
+            </div>
+          {{/if}}
+          {{#if contactInfo.fax}}
+            <div>
+              <span class="p-key">Fax Number: </span>
+              <span class="p-value">{{contactInfo.fax}}</span>
+            </div>
+          {{/if}}
+          {{#if contactInfo.city}}
+            <div>
+              <span class="p-key">City: </span>
+              <span class="p-value">{{contactInfo.city}}</span>
+            </div>
+          {{/if}}
+          {{#if contactInfo.state}}
+            <div>
+              <span class="p-key">State: </span>
+              <span class="p-value">{{contactInfo.state}}</span>
+            </div>
+          {{/if}}
+          {{#if contactInfo.country}}
+            <div>
+              <span class="p-key">Country: </span>
+              <span class="p-value">{{uppercase contactInfo.country}}</span>
+            </div>
+          {{/if}}
+        {{/each-in}}
+      {{/if}}
+    {{/if}}
+  </div>
+{{/if}}
+
+{{#if (eq activeTab "kustoQueryResults")}}
+  <br />
+  {{#each details.kustoQueryResults as |kustoQueryResult index|}}
+    <div>
+      {{#if (get (get expandableTitleStates "kustoQueryResults") index)}}
+        <a
+          href="#"
+          class="expandable-title"
+          {{on "click" (action "toggleExpandableTitle" index "kustoQueryResults")}}
+        >
+          <span class="text">Table
+            {{inc index}}:
+            <em>{{titleize (humanize (dasherize kustoQueryResult.tableName))}}</em></span>
+          {{fa-icon icon="angle-up"}}
+        </a>
+        <div class="table-content">
+          {{#each kustoQueryResult.tableFields as |displayField|}}
+            {{#if
+              (or
+                displayField.value (eq displayField.value false) (eq displayField.value 0)
+              )
+            }}
+              <div>
+                <span class="p-key">{{displayField.name}}: </span>
+                <span class="p-value break-all">
+                  {{#if (eq displayField.type "datetime")}}
+                    {{moment-format
+                      displayField.value
+                      "MM/DD/YYYY HH:mm:ss"
+                      timeZone=timezone
+                    }}
+                  {{else}}
+                    {{displayField.value}}
+                  {{/if}}
+                </span>
+              </div>
+            {{else if (eq displayField.type "endOfRow")}}
+              <hr />
+            {{/if}}
+          {{/each}}
+        </div>
+      {{else}}
+        <a
+          href="#"
+          class="expandable-title"
+          {{on "click" (action "toggleExpandableTitle" index "kustoQueryResults")}}
+        >
+          <span class="text">Table
+            {{inc index}}:
+            <em>{{titleize (humanize (dasherize kustoQueryResult.tableName))}}</em></span>
+          {{fa-icon icon="angle-down"}}
+        </a>
+      {{/if}}
+    </div>
+  {{/each}}
+{{/if}}

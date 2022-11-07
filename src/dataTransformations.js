@@ -19,7 +19,12 @@ const {
   identity,
   join,
   split,
-  getOr
+  getOr,
+  last,
+  trim,
+  reverse,
+  slice,
+  flatMap
 } = require('lodash/fp');
 
 const { IGNORED_IPS } = require('./constants');
@@ -178,6 +183,42 @@ const encodeBase64 = (str) => str && Buffer.from(str).toString('base64');
 
 const decodeBase64 = (str) => str && Buffer.from(str, 'base64').toString('ascii');
 
+const standardizeEntityTypes = (entities) =>
+  map(
+    ({ type, types, ...entity }) => ({
+      ...entity,
+      type: type === 'custom' ? flow(first, split('.'), last)(types) : type
+    }),
+    entities
+  );
+
+// allCombinations(['a', 'b'], [[1,2],[4,5]]) --> outputs [ { a: 1, b: 4 }, { a: 1, b: 5 }, { a: 2, b: 4 }, { a: 2, b: 5 } ]
+const allCombinations = (
+  [dimensionName, ...remainingDimensionNames],
+  [arrayToCombine, ...remainingArraysToCombine],
+  agg = {}
+) =>
+  flatMap(
+    (item) =>
+      size(remainingArraysToCombine)
+        ? allCombinations(remainingDimensionNames, remainingArraysToCombine, {
+            ...agg,
+            [dimensionName]: item
+          })
+        : {
+            ...agg,
+            [dimensionName]: item
+          },
+    arrayToCombine
+  );
+
+const buildLogger = (logger, ...args) =>
+  logger[
+    ['trace', 'debug', 'info', 'warn', 'error', 'fatal'].includes(last(args))
+      ? last(args)
+      : 'info'
+  ](slice(0, -1, args));
+
 module.exports = {
   getKeys,
   groupEntities,
@@ -196,5 +237,8 @@ module.exports = {
   sleep,
   getSetCookies,
   encodeBase64,
-  decodeBase64
+  decodeBase64,
+  standardizeEntityTypes,
+  allCombinations,
+  buildLogger
 };

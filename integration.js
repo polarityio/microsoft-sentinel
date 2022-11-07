@@ -1,56 +1,54 @@
 'use strict';
-
-const _validateOptions = require('./src/validateOptions');
-const createRequestWithDefaults = require('./src/createRequestWithDefaults');
-
+const { validateOptions, parseUserOptionLists } = require('./src/userOptions');
 const getLookupResults = require('./src/getLookupResults');
-const { parseErrorToReadableJSON } = require('./src/dataTransformations');
+const {
+  splitOutIgnoredIps,
+  standardizeEntityTypes,
+  parseErrorToReadableJSON
+} = require('./src/dataTransformations');
+const { last, slice, concat } = require('lodash/fp');
 
-const sendMessage = require('./src/sendMessage');
-const loadMoreSearchMessages = require('./src/loadMoreSearchMessages');
+let logger;
+const startup = (_logger) => {
+  logger = _logger
+};
 
-let Logger;
-let requestWithDefaults;
-const startup = async (logger) => {
-  Logger = logger;
-
-  requestWithDefaults = createRequestWithDefaults(Logger);
+const Logger = (...args) => {
+  const lastArg = last(args);
+  const lastArgIsLevel = ['trace', 'debug', 'info', 'warn', 'error', 'fatal'].includes(
+    lastArg
+  );
+  const loggingLevel = lastArgIsLevel ? lastArg : 'info';
+  const logArgs = lastArgIsLevel ? slice(0, -1, args) : args;
+  logger[loggingLevel](...logArgs);
 };
 
 const doLookup = async (entities, options, cb) => {
-  Logger.debug({ entities }, 'Entities');
-  options.url = options.url.endsWith('/') ? options.url.slice(0, -1) : options.url;
-
-  let lookupResults;
   try {
-    lookupResults = await getLookupResults(
-      entities,
-      options,
-      requestWithDefaults,
-      Logger
+    Logger({ entities }, 'Entities', 'debug');
+
+    const { entitiesPartition, ignoredIpLookupResults } = splitOutIgnoredIps(entities);
+    const entitiesWithCustomTypesSpecified = standardizeEntityTypes(entitiesPartition);
+    const optionsWithUpdatedLists = parseUserOptionLists(options);
+
+    const lookupResults = concat(
+      await getLookupResults(entitiesWithCustomTypesSpecified, optionsWithUpdatedLists),
+      ignoredIpLookupResults
     );
+
+    Logger({ lookupResults }, 'Lookup Results', 'trace');    
+    cb(null, lookupResults);
   } catch (error) {
     const err = parseErrorToReadableJSON(error);
-    Logger.error({ error, formattedError: err }, 'Get Lookup Results Failed');
 
-    return cb({ detail: error.message || 'Command Failed', err });
+    Logger({ error, formattedError: err }, 'Get Lookup Results Failed', 'error');
+    cb({ detail: error.message || 'Lookup Failed', err });
   }
-
-  Logger.trace({ lookupResults }, 'Lookup Results');
-  cb(null, lookupResults);
 };
-
-const getOnMessage = { sendMessage, loadMoreSearchMessages };
-
-const onMessage = ({ action, data: actionParams }, options, callback) =>
-  getOnMessage[action](actionParams, options, requestWithDefaults, callback, Logger);
-
-const validateOptions = (options, callback) =>
-  _validateOptions(options, callback, Logger);
 
 module.exports = {
   startup,
   validateOptions,
   doLookup,
-  onMessage
+  Logger
 };

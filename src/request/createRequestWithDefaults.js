@@ -1,17 +1,17 @@
 const fs = require('fs');
 
 const request = require('postman-request');
-const { eq, get, flow, identity } = require('lodash/fp');
+const { get, identity } = require('lodash/fp');
 
-const authenticateRequest = require('./authenticateRequest');
 const { ERROR_MESSAGES } = require('../../src/constants');
+const authenticateRequest = require('./authenticateRequest');
 const handleRequestErrorsForServices = require('./handleRequestErrorsForServices');
 
 const SUCCESSFUL_ROUNDED_REQUEST_STATUS_CODES = [200];
 
 const _configFieldIsValid = (field) => typeof field === 'string' && field.length > 0;
 
-const createRequestWithDefaults = (Logger = console) => {
+const createRequestWithDefaults = () => {
   const {
     request: { ca, cert, key, passphrase, rejectUnauthorized, proxy }
   } = require('../../config/config.js');
@@ -69,41 +69,37 @@ const createRequestWithDefaults = (Logger = console) => {
       return postRequestFunctionResults;
     };
   };
-  
+
   const checkForStatusError = ({ statusCode, body }, requestOptions) => {
+    const { Logger } = require('../../integration');
+
     const requestOptionsWithoutSensitiveData = {
       ...requestOptions,
+      options: '{...}',
       headers: {
         ...requestOptions.headers,
-        Cookie: '*********',
-        Authorization: 'Bearer ************',
-      },
-      body: {
-        ...requestOptions.body,
-        identification: '*******',
-        password: '*******'
+        Authorization: 'Bearer ****************'
       }
     };
 
-    // Logger.info({
-    //   responseBody: JSON.stringify(body, null, 2),
-    //   MESSAGE: 'Request Ran, Checking Status...',
-    //   statusCode,
-    //   requestOptions: JSON.stringify(requestOptionsWithoutSensitiveData, null, 2)
-    // });
+    Logger(
+      {
+        MESSAGE: 'Request Ran, Checking Status...',
+        statusCode,
+        requestOptions: requestOptionsWithoutSensitiveData,
+        responseBody: body
+      },
+      'trace'
+    );
 
     const roundedStatus = Math.round(statusCode / 100) * 100;
     const statusCodeNotSuccessful =
       !SUCCESSFUL_ROUNDED_REQUEST_STATUS_CODES.includes(roundedStatus);
 
-    const requestIsNotOk = flow(get('ok'), eq(false))(body);
-    if (statusCodeNotSuccessful || requestIsNotOk) {
+    if (statusCodeNotSuccessful) {
       const requestError = Error('Request Error');
       requestError.status = statusCodeNotSuccessful ? statusCode : body.error;
-      requestError.detail = get(
-        get('error', body),
-        ERROR_MESSAGES
-      );
+      requestError.detail = get(get('error', body), ERROR_MESSAGES);
       requestError.description = JSON.stringify(body);
       requestError.requestOptions = JSON.stringify(requestOptionsWithoutSensitiveData);
       throw requestError;
@@ -111,7 +107,7 @@ const createRequestWithDefaults = (Logger = console) => {
   };
 
   const requestDefaultsWithInterceptors = requestWithDefaultsBuilder(
-    authenticateRequest(requestWithDefaultsBuilder),
+    authenticateRequest,
     identity,
     handleRequestErrorsForServices(requestWithDefaultsBuilder)
   );
@@ -119,6 +115,4 @@ const createRequestWithDefaults = (Logger = console) => {
   return requestDefaultsWithInterceptors;
 };
 
-
-
-module.exports = createRequestWithDefaults ;
+module.exports = createRequestWithDefaults;
