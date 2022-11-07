@@ -3,7 +3,7 @@ module.exports = {
   acronym: 'MS-SNTL',
   description:
     'Search for WHOIS, Geolocation Data, Incidents, Threat Intelligence Indicators, and Query Logs via Kusto Queries',
-  entityTypes: ['domain', 'IPv4', 'email', 'hash', 'MAC'],
+  entityTypes: ['domain', 'IPv4', 'email', 'hash', 'cve'],
   styles: ['./styles/styles.less'],
   defaultColor: 'light-blue',
   block: {
@@ -95,7 +95,7 @@ module.exports = {
       default: 'ThreatIntelligenceIndicator | search "{{ENTITY}}" | take 10',
       type: 'text',
       userCanEdit: false,
-      adminOnly: true
+      adminOnly: false
     },
     {
       key: 'kustoQuerySummaryFields',
@@ -104,7 +104,7 @@ module.exports = {
         'Comma delimited list of field values to include as part of the summary.  These fields must be returned by your Kusto Query. This option must be set to "User can view and edit" or "User can view only".',
       default: '',
       type: 'text',
-      userCanEdit: true,
+      userCanEdit: false,
       adminOnly: false
     },
     {
@@ -123,7 +123,7 @@ module.exports = {
       description: 'The number of days to look back when querying logs, and incidents.',
       default: 30,
       type: 'number',
-      userCanEdit: true,
+      userCanEdit: false,
       adminOnly: false
     },
     {
@@ -134,7 +134,7 @@ module.exports = {
       default: false,
       type: 'boolean',
       userCanEdit: false,
-      adminOnly: true
+      adminOnly: false
     }
   ]
 };
