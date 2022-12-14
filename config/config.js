@@ -135,6 +135,16 @@ module.exports = {
       type: 'boolean',
       userCanEdit: false,
       adminOnly: false
+    },
+    {
+      key: 'ignoreThreatIntelligenceResults',
+      name: 'Ignore Threat Intelligence Results.',
+      description:
+        'If checked, entities will not return if only threat intelligence indicators data is found, and no query types have results.',
+      default: false,
+      type: 'boolean',
+      userCanEdit: false,
+      adminOnly: false
     }
   ]
 };
