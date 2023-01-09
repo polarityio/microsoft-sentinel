@@ -10,7 +10,9 @@ const {
 const getLookupResults = async (entities, options) => {
   const [indicators, incidents, domainWhois, ipGeodata, kustoQueryResults] =
     await Promise.all([
-      getIndicators(entities, options),
+      options.ignoreThreatIntelligenceResults
+        ? Promise.resolve({})
+        : getIndicators(entities, options),
       getIncidents(entities, options),
       getDomainWhois(entities, options),
       getIpGeodata(entities, options),
