@@ -37,7 +37,7 @@
       <img width="450px" alt="Secret Description & Add" src="./assets/secret-desc-and-add.png">
     </div>
 
-**8**. Copy your new client secret `Value` (_Not ID_) to to the relevant Polarity User Option
+**8**. Copy your new client secret `Value` (_Not ID_) to the relevant Polarity User Option
     <div style="margin-bottom: 10px; display: flex; justify-content: space-between; align-items: flex-start;">
       <img width="66%" alt="Copy Secret Value" src="./assets/copy-secret-value.png">
       <img width="32%" alt="Paste Secret Value to User Options" src="./assets/paste-secret-value.png">
@@ -54,7 +54,7 @@
       <img width="650px" alt="Navigate to Log Analytics workspaces on Azure" src="./assets/select-resource-group.png">
     </div>
 
-**11**. Copy the `Subscription ID` & `Resource group name` to the relevant Polarity User Option
+**11**. Copy the `Subscription ID` & `Resource group` name to the relevant Polarity User Option
     <div style="margin-bottom: 10px; display: flex; justify-content: space-between; align-items: flex-start;">
       <img width="63%" alt="Copy Subscription ID & Resource Group Name" src="./assets/copy-sub-id-and-resource-group-name.png">
       <img width="35%" alt="Paste Subscription ID & Resource Group Name" src="./assets/paste-sub-id-and-resource-group-name.png">
