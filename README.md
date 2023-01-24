@@ -7,11 +7,14 @@ Microsoft Sentinel puts the cloud and large-scale intelligence from decades of M
 The Polarity Microsoft Sentinel Integration allows users to search for WHOIS, Geolocation
 Data, Incidents, Threat Intelligence Indicators, and Query Logs via Kusto Queries for Domains, IP Addresses, and Hashes.
 
+> ***NOTE:*** You can find instructions on how to setup your _Azure instance of Microsoft Sentinel_ in [MicrosoftSentinelAzureSetup.md](./MicrosoftSentinelAzureSetup.md)
+
 <div style="display:flex; justify-content:center; align-items: flex-start;">
   <img width="300" alt="Integration Example Search" src="./assets/integration-example.png">
 </div>
 
-To learn more about Microsoft Sentinel, visit the [official website](__TODO__).
+To learn more about Microsoft Sentinel, visit the [official website](https://azure.microsoft.com/en-us/products/microsoft-sentinel/).
+
 
 ## Microsoft Sentinel Integration Options
 
