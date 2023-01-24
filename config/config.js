@@ -140,7 +140,7 @@ module.exports = {
       key: 'ignoreThreatIntelligenceResults',
       name: 'Enable Threat Intelligence Searches',
       description:
-        'f enabled, the integration will search threat intelligence indicator data',
+        'If enabled, the integration will search threat intelligence indicator data',
       default: true,
       type: 'boolean',
       userCanEdit: false,
