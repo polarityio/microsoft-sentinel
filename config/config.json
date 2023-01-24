@@ -2,16 +2,8 @@
   "name": "Microsoft Sentinel",
   "acronym": "MS-SNTL",
   "description": "Search for WHOIS, Geolocation Data, Incidents, Threat Intelligence Indicators, and Query Logs via Kusto Queries",
-  "entityTypes": [
-    "domain",
-    "IPv4",
-    "email",
-    "hash",
-    "cve"
-  ],
-  "styles": [
-    "./styles/styles.less"
-  ],
+  "entityTypes": ["domain", "IPv4", "email", "hash", "cve"],
+  "styles": ["./styles/styles.less"],
   "defaultColor": "light-blue",
   "block": {
     "component": {
@@ -128,6 +120,15 @@
       "name": "Ignore Geodata/WHOIS Only Results",
       "description": "If checked, entities will not return if only Geodata and/or WHOIS data is found, and no other query types have results.",
       "default": false,
+      "type": "boolean",
+      "userCanEdit": false,
+      "adminOnly": false
+    },
+    {
+      "key": "ignoreThreatIntelligenceResults",
+      "name": "Enable Threat Intelligence Searches",
+      "description": "If enabled, the integration will search threat intelligence indicator data",
+      "default": true,
       "type": "boolean",
       "userCanEdit": false,
       "adminOnly": false
