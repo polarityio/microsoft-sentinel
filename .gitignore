@@ -33,3 +33,6 @@ test-runner.js
 ~
 .polarity.conf
 test.js
+
+# Ignore the .vscode folder
+.vscode/
