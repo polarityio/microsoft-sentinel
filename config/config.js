@@ -138,10 +138,10 @@ module.exports = {
     },
     {
       key: 'ignoreThreatIntelligenceResults',
-      name: 'Ignore Threat Intelligence Results.',
+      name: 'Enable Threat Intelligence Searches',
       description:
-        'If checked, entities will not return if only threat intelligence indicators data is found, and no query types have results.',
-      default: false,
+        'f enabled, the integration will search threat intelligence indicator data',
+      default: true,
       type: 'boolean',
       userCanEdit: false,
       adminOnly: false

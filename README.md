@@ -65,9 +65,9 @@ The number of days to look back when querying logs, and incidents.
 
 If checked, entities will not return if only Geodata and/or WHOIS data is found, and no other query types have results.
 
-### Ignore Threat Intelligence Results
+### Enable Threat Intelligence Searches
 
-If checked, entities will not return if only threat intelligence indicators data is found, and no query types have results.
+If enabled, the integration will search threat intelligence indicator data.
 
 ## Installation Instructions
 
