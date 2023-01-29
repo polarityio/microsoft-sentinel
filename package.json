@@ -1,7 +1,7 @@
 {
   "main": "./integration.js",
   "name": "microsoft-sentinel",
-  "version": "3.0.1-beta",
+  "version": "3.1.0-beta",
   "private": true,
   "license": "MIT",
   "author": "Polarity",
