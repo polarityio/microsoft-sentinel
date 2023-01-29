@@ -137,7 +137,7 @@ module.exports = {
       adminOnly: false
     },
     {
-      key: 'ignoreThreatIntelligenceResults',
+      key: 'enableThreatIntelligenceResults',
       name: 'Enable Threat Intelligence Searches',
       description:
         'If enabled, the integration will search threat intelligence indicator data',
