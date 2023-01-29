@@ -34,5 +34,8 @@ test-runner.js
 .polarity.conf
 test.js
 
-# Ignore the .vscode folder
-.vscode/
+# Ignore VSCode
+*.history
+.histoy
+*.vscode
+.vscode
