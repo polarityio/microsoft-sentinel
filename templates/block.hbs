@@ -186,11 +186,7 @@
                 (take 20 indicator.properties.threatIntelligenceTags)
                 as |threatIntelligenceTag|
               }}
-                <span class="tag link-tag d-inline-flex align-items-center">
-                  <span class="text-container summary-source">
-                    {{threatIntelligenceTag}}
-                  </span>
-                </span>
+                <span class="p-tag">{{threatIntelligenceTag}}</span>
               {{/each}}
             {{/if}}
           </div>
@@ -333,11 +329,7 @@
               </span>
             {{else}}
               {{#each (take 20 incident.properties.labels) as |label|}}
-                <span class="tag link-tag d-inline-flex align-items-center">
-                  <span class="text-container summary-source">
-                    {{label.labelName}}
-                  </span>
-                </span>
+                <span class="p-tag">{{label.labelName}}</span>
               {{/each}}
             {{/if}}
           </div>
@@ -361,7 +353,7 @@
 {{#if (eq activeTab "ipGeodata")}}
   <div>
     <h1 class="p-title">
-      {{fa-icon icon="location" class="large-icon"}}
+      {{fa-icon icon="location" fixedWidth=true}}
       {{details.ipGeodata.ipAddr}}
     </h1>
     {{#if details.ipGeodata.asn}}
@@ -442,7 +434,7 @@
 {{#if (eq activeTab "domainWhois")}}
   <div>
     <h1 class="p-title">
-      {{fa-icon icon="question" class="large-icon"}}
+      {{fa-icon icon="globe" fixedWidth=true}}
       {{details.domainWhois.domain}}
     </h1>
     {{#if details.domainWhois.server}}
@@ -486,7 +478,7 @@
     {{#if details.domainWhois.parsedWhois}}
       {{#if details.domainWhois.parsedWhois.registrar}}
         <h1 class="p-title">
-          {{fa-icon icon="user" class="large-icon"}}
+          {{fa-icon icon="user" fixedWidth=true}}
           Registrar
         </h1>
         {{#if details.domainWhois.parsedWhois.registrar.name}}
@@ -552,11 +544,7 @@
             (take 20 details.domainWhois.parsedWhois.nameServers)
             as |nameServer nameServerIndex|
           }}
-            <span class="tag link-tag d-inline-flex align-items-center">
-              <span class="text-container summary-source">
-                {{nameServer}}
-              </span>
-            </span>
+            <span class="p-tag">{{nameServer}}</span>
           {{/each}}
         {{/if}}
       </div>
@@ -574,18 +562,14 @@
             (take 20 details.domainWhois.parsedWhois.statuses)
             as |status statusIndex|
           }}
-            <span class="tag link-tag d-inline-flex align-items-center">
-              <span class="text-container summary-source">
-                {{status}}
-              </span>
-            </span>
+            <span class="p-tag">{{status}}</span>
           {{/each}}
         {{/if}}
       </div>
       {{#if details.domainWhois.parsedWhois.contacts}}
         {{#each-in details.domainWhois.parsedWhois.contacts as |contactType contactInfo|}}
           <h1 class="p-title">
-            {{fa-icon icon="user" class="large-icon"}}
+            {{fa-icon icon="user" fixedWidth=true}}
             {{get whoisDisplayNames contactType}}
           </h1>
           {{#if contactInfo.name}}
