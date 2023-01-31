@@ -135,6 +135,16 @@ module.exports = {
       type: 'boolean',
       userCanEdit: false,
       adminOnly: false
+    },
+    {
+      key: 'enableThreatIntelligenceResults',
+      name: 'Enable Threat Intelligence Searches',
+      description:
+        'If enabled, the integration will search threat intelligence indicator data',
+      default: true,
+      type: 'boolean',
+      userCanEdit: false,
+      adminOnly: false
     }
   ]
 };

@@ -8,7 +8,7 @@ const {
 } = require('./src/dataTransformations');
 const { last, slice, concat } = require('lodash/fp');
 
-let logger;
+let logger = console;
 const startup = (_logger) => {
   logger = _logger
 };

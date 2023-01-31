@@ -1,10 +1,10 @@
-const { get, eq, flow } = require('lodash/fp');
+const { get, eq, flow, getOr } = require('lodash/fp');
 
 const { parseErrorToReadableJSON } = require('../../src/dataTransformations');
 
 const handleRequestErrorsForServices =
   (requestWithDefaultsBuilder) => async (error, requestOptions) =>
-    await get(requestOptions.site, authenticationProcessBySite)(
+    await getOr((e) => {throw e;},requestOptions.site, authenticationProcessBySite)(
       error,
       requestOptions,
       requestWithDefaultsBuilder
