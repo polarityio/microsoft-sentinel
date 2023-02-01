@@ -26,7 +26,7 @@ Your Azure AD Registered App's Client ID associated with your Microsoft Sentinel
 
 Your Azure AD Registered App's Tenant ID associated with your Microsoft Sentinel Instance.
 
-### Azure AD Registered App Client Secret
+### Azure AD Registered App Client Secret Value
 
 Your Azure AD Registered App's Client Secret Value associated with your Microsoft Sentinel Instance.
 
