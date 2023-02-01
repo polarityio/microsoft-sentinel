@@ -48,9 +48,9 @@ module.exports = {
     },
     {
       key: 'clientSecret',
-      name: 'Azure AD Registered App Client Secret',
+      name: 'Azure AD Registered App Client Secret Value',
       description:
-        "Your Azure AD Registered App's Client Secret associated with your Microsoft Sentinel Instance.",
+        "Your Azure AD Registered App's Client Secret Value associated with your Microsoft Sentinel Instance.",
       default: '',
       type: 'password',
       userCanEdit: false,
