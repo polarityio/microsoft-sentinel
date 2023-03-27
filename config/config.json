@@ -1,4 +1,5 @@
 {
+  "polarityIntegrationUuid": "ff1138a0-cce1-11ed-aeee-075d3490155d",
   "name": "Microsoft Sentinel",
   "acronym": "MS-SNTL",
   "description": "Search for WHOIS, Geolocation Data, Incidents, Threat Intelligence Indicators, and Query Logs via Kusto Queries",
