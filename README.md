@@ -7,7 +7,7 @@ Microsoft Sentinel puts the cloud and large-scale intelligence from decades of M
 The Polarity Microsoft Sentinel Integration allows users to search for WHOIS, Geolocation
 Data, Incidents, Threat Intelligence Indicators, and Query Logs via Kusto Queries for Domains, IP Addresses, and Hashes.
 
-> **_NOTE:_** You can find instructions on how to setup your _Azure instance of Microsoft Sentinel_ in [MicrosoftSentinelAzureSetup.md](./MicrosoftSentinelAzureSetup.md)
+> **_NOTE:_** You can find instructions on how to setup your _Azure instance of Microsoft Sentinel_ below in the [Microsoft Sentinel Azure Setup](https://github.com/polarityio/microsoft-sentinel#microsoft-sentinel-azure-setup) section of this README.
 
 <div style="display:flex; justify-content:center; align-items: flex-start;">
   <img width="300" alt="Integration Example Search" src="./assets/integration-example.png">
@@ -73,11 +73,11 @@ If enabled, the integration will search threat intelligence indicator data.
 
 ## Microsoft Sentinel Azure Setup
 
+### _Create App Registration & Add Related User Options_
 **1**. Navigate to App Registrations
-
-<div style="margin-bottom: 10px;">
-  <img alt="Navigate to App Registrations on Azure" src="./assets/nav-to-app-reg.png">
-</div>
+    <div style="margin-bottom: 10px;">
+      <img alt="Navigate to App Registrations on Azure" src="./assets/nav-to-app-reg.png">
+    </div>
 
 **2**. Select `New registration`
     <div style="margin-bottom: 10px;">
@@ -116,7 +116,7 @@ If enabled, the integration will search threat intelligence indicator data.
       <img width="32%" alt="Paste Secret Value to User Options" src="./assets/paste-secret-value.png">
     </div>
 
-## _Get Subscription & Resource User Options_
+### _Get Subscription & Resource User Options_
 **9**. Navigate to `Log Analytics workspaces`
     <div style="margin-bottom: 10px;">
       <img width="550px" alt="Navigate to Log Analytics workspaces on Azure" src="./assets/nav-to-log-analytics-workspaces.png">
@@ -133,7 +133,7 @@ If enabled, the integration will search threat intelligence indicator data.
       <img width="35%" alt="Paste Subscription ID & Resource Group Name" src="./assets/paste-sub-id-and-resource-group-name.png">
     </div>
 
-## _Setup IAM Role for App Registration_
+### _Setup IAM Role for App Registration_
 **12**. Navigate to `Access control (IAM)`
     <div style="margin-bottom: 10px;">
       <img width="700px" alt="Navigate to Access control (IAM)" src="./assets/nav-to-iam.png">
@@ -166,7 +166,7 @@ If enabled, the integration will search threat intelligence indicator data.
       <img width="28%" alt="Paste Workspace Name & Workspace ID" src="./assets/paste-workspace-name-and-workspace-id.png">
     </div>
 
-## Apply Changes
+### Apply Changes
 **18**. Make sure to Click `Apply Changes` for your Polarity User Options
 
 ## Installation Instructions
