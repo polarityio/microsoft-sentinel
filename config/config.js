@@ -19,12 +19,32 @@ module.exports = {
     key: '',
     passphrase: '',
     ca: '',
-    proxy: ""
+    proxy: ''
   },
   logging: {
     level: 'info' //trace, debug, info, warn, error, fatal
   },
   options: [
+    {
+      key: 'managementApiUrl',
+      name: 'Azure Management API URL',
+      description:
+        'The Azure Management API URL associated with your Azure Microsoft 365 Defender Instance.',
+      default: 'https://management.azure.com',
+      type: 'text',
+      userCanEdit: false,
+      adminOnly: true
+    },
+    {
+      key: 'logAnalyticsApiUrl',
+      name: 'Azure Log Analytics API URL',
+      description:
+        'The Azure Log Analytics API URL associated with your Azure Microsoft 365 Defender Instance.',
+      default: 'https://api.loganalytics.io',
+      type: 'text',
+      userCanEdit: false,
+      adminOnly: true
+    },
     {
       key: 'clientId',
       name: 'Azure AD Registered App Client/Application ID',

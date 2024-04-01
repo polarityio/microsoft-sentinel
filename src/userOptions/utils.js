@@ -34,6 +34,33 @@ const validateStringOptions = (stringOptionsErrorMessages, options, otherErrors 
       : agg;
   }, otherErrors)(stringOptionsErrorMessages);
 
+const validateUrlOption = (options, urlKey = 'url') => {
+  let allValidationErrors = [];
+
+  const urlValue = get([urlKey, 'value'], options);
+
+  if (urlValue.endsWith('/')) {
+    allValidationErrors = allValidationErrors.concat({
+      key: urlKey,
+      message: 'Your Url must not end with a /'
+    });
+  }
+
+  if (urlValue) {
+    try {
+      new URL(urlValue);
+    } catch (_) {
+      allValidationErrors = allValidationErrors.concat({
+        key: urlKey,
+        message:
+          'What is currently provided is not a valid URL. You must provide a valid Instance URL.'
+      });
+    }
+  }
+
+  return allValidationErrors;
+};
+
 const splitCommaSeparatedUserOption = curry((key, options) =>
   flow(get(key), split(','), map(trim), compact, uniq)(options)
 );
@@ -62,6 +89,7 @@ const splitKeyValueCommaSeparatedUserOptionThenFirst = (key, options) =>
 module.exports = {
   flattenOptions,
   validateStringOptions,
+  validateUrlOption,
   splitCommaSeparatedUserOption,
   splitKeyValueCommaSeparatedUserOption,
   splitCommaSeparatedUserOptionThenFirst,

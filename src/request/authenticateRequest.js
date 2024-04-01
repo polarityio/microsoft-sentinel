@@ -8,7 +8,16 @@ const tokenCache = new NodeCache({
   stdTTL: 30 * 60
 });
 
+let scopesBySite;
+
 const authenticateRequest = async ({ site, route, options, ...requestOptions }) => {
+  const urlBySite = {
+    management: options.managementApiUrl + '/',
+    logs: options.logAnalyticsApiUrl + '/'
+  };
+
+  scopesBySite = mapObject((value, key) => [key, `${value}.default`], urlBySite);
+  
   const accessToken = await getToken(site, options);
 
   return {
@@ -43,7 +52,7 @@ const getClient = async (clientCacheId, options) => {
     const config = {
       auth: {
         clientId: options.clientId,
-        authority: urlBySite.login + options.tenantId,
+        authority: 'https://login.microsoftonline.com/' + options.tenantId,
         clientSecret: options.clientSecret
       }
     };
@@ -65,13 +74,5 @@ const getAccessToken = async (clientCacheId, client, site) => {
   }
   return accessToken;
 };
-
-const urlBySite = {
-  logs: 'https://api.loganalytics.io/',
-  management: 'https://management.azure.com/',
-  login: 'https://login.microsoftonline.com/'
-};
-
-const scopesBySite = mapObject((value, key) => [key, `${value}.default`], urlBySite);
 
 module.exports = authenticateRequest;
