@@ -7,10 +7,10 @@
   "author": "Polarity",
   "dependencies": {
     "@azure/msal-node": "^1.14.6",
-    "async": "^3.2.4",
+    "async": "^3.2.5",
     "lodash": "^4.17.21",
     "moment": "^2.29.4",
     "node-cache": "^5.1.2",
-    "postman-request": "^2.88.1-postman.33"
+    "postman-request": "^2.88.1-postman.40"
   }
 }
