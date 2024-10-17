@@ -3,7 +3,7 @@ module.exports = {
   acronym: 'MS-SNTL',
   description:
     'Search for WHOIS, Geolocation Data, Incidents, Threat Intelligence Indicators, and Query Logs via Kusto Queries',
-  entityTypes: ['domain', 'IPv4', 'email', 'hash', 'cve'],
+  entityTypes: ['domain', 'IPv4', 'email', 'MD5', 'SHA1', 'SHA256', 'cve'],
   styles: ['./styles/styles.less'],
   defaultColor: 'light-blue',
   block: {
