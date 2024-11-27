@@ -3,6 +3,8 @@
   "name": "Microsoft Sentinel",
   "acronym": "MS-SNTL",
   "description": "Search for WHOIS, Geolocation Data, Incidents, Threat Intelligence Indicators, and Query Logs via Kusto Queries",
+  "supportsAdditionalCustomTypes": true,
+  "dataTypes": ["domain", "IPv4", "email", "MD5", "SHA1", "SHA256", "cve"],
   "entityTypes": ["domain", "IPv4", "email", "MD5", "SHA1", "SHA256", "cve"],
   "styles": ["./styles/styles.less"],
   "defaultColor": "light-blue",
